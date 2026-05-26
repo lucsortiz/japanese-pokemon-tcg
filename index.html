@@ -51,17 +51,28 @@
     @media print{body{background:white;padding:0}header{border-radius:0;box-shadow:none}tbody tr{break-inside:avoid}.price-input{border:none;background:transparent}}
   </style>
   <script>
-    // ── Database config ────────────────────────────────────────────────────────
-    // 1. Create a free account at https://jsonbin.io
-    // 2. Click "Create Bin", paste {} as content, save
-    // 3. Copy the Bin ID and your Master Key below
-    const DB_BIN_ID  = '';   // e.g. '6650a1f3ad19ca34f87e4b2c'
-    const DB_API_KEY = '';   // e.g. '$2a$10$abc...'
+    // ── Supabase config ────────────────────────────────────────────────────────
+    // 1. In your Supabase project → SQL Editor, run:
+    //      create table prices (
+    //        key   text primary key,
+    //        value numeric not null default 0
+    //      );
+    //      alter table prices enable row level security;
+    //      create policy "public read"  on prices for select using (true);
+    //      create policy "public write" on prices for all    using (true);
+    // 2. Settings → API → copy Project URL and anon/public key below
+    const SUPABASE_URL      = '';   // e.g. 'https://xxxx.supabase.co'
+    const SUPABASE_ANON_KEY = '';   // anon / public key
     // ──────────────────────────────────────────────────────────────────────────
 
-    const BIN_URL = DB_BIN_ID ? `https://api.jsonbin.io/v3/b/${DB_BIN_ID}` : null;
-    let pricesCache = {};
-    let saveTimer   = null;
+    const API = SUPABASE_URL ? `${SUPABASE_URL}/rest/v1/prices` : null;
+    const HEADERS = () => ({
+      'apikey':        SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type':  'application/json'
+    });
+
+    const saveTimers = {};
 
     function setStatus(msg, color) {
       const el = document.getElementById('sync-status');
@@ -69,40 +80,45 @@
     }
 
     async function loadPrices() {
-      if (!BIN_URL) {
-        setStatus('⚠ Set DB_BIN_ID and DB_API_KEY in the script to enable shared prices', '#ffcc44');
+      if (!API) {
+        setStatus('⚠ Set SUPABASE_URL and SUPABASE_ANON_KEY in the script to enable shared prices', '#ffcc44');
         return;
       }
       setStatus('Loading prices…', 'rgba(255,255,255,0.7)');
       try {
-        const res = await fetch(BIN_URL, { headers: { 'X-Master-Key': DB_API_KEY } });
-        const json = await res.json();
-        pricesCache = json.record || {};
+        const res = await fetch(`${API}?select=key,value`, { headers: HEADERS() });
+        if (!res.ok) throw new Error(await res.text());
+        const rows = await res.json();
+        const prices = Object.fromEntries(rows.map(r => [r.key, r.value]));
         document.querySelectorAll('.price-input').forEach(inp => {
-          inp.value = pricesCache[inp.dataset.key] ?? 0;
+          inp.value = prices[inp.dataset.key] ?? 0;
         });
         setStatus('Prices up to date ✓', '#7ef5a0');
       } catch (e) {
-        setStatus('Could not load prices — check your DB config', '#ff8080');
+        setStatus('Could not load prices — check your Supabase config', '#ff8080');
       }
     }
 
-    function scheduleSync() {
-      if (!BIN_URL) return;
+    async function upsertPrice(key, value) {
+      if (!API) return;
+      try {
+        const res = await fetch(API, {
+          method:  'POST',
+          headers: { ...HEADERS(), 'Prefer': 'resolution=merge-duplicates' },
+          body:    JSON.stringify([{ key, value: parseFloat(value) || 0 }])
+        });
+        if (!res.ok) throw new Error(await res.text());
+        setStatus('Saved ✓', '#7ef5a0');
+      } catch (e) {
+        setStatus('Save failed — check your Supabase config', '#ff8080');
+      }
+    }
+
+    function scheduleUpsert(key, value) {
+      if (!API) return;
       setStatus('Saving…', 'rgba(255,255,255,0.7)');
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(async () => {
-        try {
-          await fetch(BIN_URL, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'X-Master-Key': DB_API_KEY },
-            body: JSON.stringify(pricesCache)
-          });
-          setStatus('Saved ✓', '#7ef5a0');
-        } catch (e) {
-          setStatus('Save failed — check your DB config', '#ff8080');
-        }
-      }, 800);
+      clearTimeout(saveTimers[key]);
+      saveTimers[key] = setTimeout(() => upsertPrice(key, value), 800);
     }
 
     function tryNext(img, sources, idx) {
@@ -114,10 +130,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
       await loadPrices();
       document.querySelectorAll('.price-input').forEach(inp => {
-        inp.addEventListener('input', () => {
-          pricesCache[inp.dataset.key] = inp.value;
-          scheduleSync();
-        });
+        inp.addEventListener('input', () => scheduleUpsert(inp.dataset.key, inp.value));
       });
     });
   </script>
@@ -468,7 +481,7 @@
 </section>
 
 <p class="note">
-  Booster pack images from <a href="https://www.artofpkm.com" style="color:#888">artofpkm.com</a> &nbsp;&middot;&nbsp; Set logos from <a href="https://tcgdex.net" style="color:#888">TCGdex</a> &nbsp;&middot;&nbsp; Prices stored in <a href="https://jsonbin.io" style="color:#888">JSONBin</a><br>
+  Booster pack images from <a href="https://www.artofpkm.com" style="color:#888">artofpkm.com</a> &nbsp;&middot;&nbsp; Set logos from <a href="https://tcgdex.net" style="color:#888">TCGdex</a> &nbsp;&middot;&nbsp; Prices stored in <a href="https://supabase.com" style="color:#888">Supabase</a><br>
   <strong>Save as PDF:</strong> Chrome &rarr; File &rarr; Print &rarr; Save as PDF &nbsp;(enable &ldquo;Background graphics&rdquo;)
 </p>
 </body>
