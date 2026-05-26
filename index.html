@@ -20,20 +20,32 @@
     .pokeball::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;background:rgba(255,255,255,0.9);border-radius:50%;border:1.5px solid rgba(255,255,255,0.5)}
     table{width:100%;border-collapse:collapse;background:white;border-radius:0 0 12px 12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.07)}
     thead th{background:#f7f7fc;padding:11px 16px;text-align:left;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#666;border-bottom:2px solid #e8e8f0}
-    thead th:nth-child(1){width:120px;text-align:center}
-    thead th:nth-child(3){width:170px}
+    thead th:nth-child(1){width:220px;text-align:center}
+    thead th:nth-child(3){width:150px}
+    thead th:nth-child(4),thead th:nth-child(5){width:100px;text-align:right}
     tbody tr{border-bottom:1px solid #ebebf4;transition:background .12s}
     tbody tr:last-child{border-bottom:none}
     tbody tr:hover{background:#fafafe}
     td{padding:9px 16px;vertical-align:middle}
     td:nth-child(1){text-align:center}
     td:nth-child(3){font-size:0.85rem;color:#555;white-space:nowrap}
-    .img-wrap{display:flex;align-items:center;justify-content:center;height:88px;width:110px;margin:0 auto}
-    .img-wrap img{max-height:86px;max-width:108px;object-fit:contain;display:block;border-radius:4px}
+    td:nth-child(4),td:nth-child(5){text-align:right}
+    .media-cell{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 0}
+    .img-wrap{display:flex;align-items:center;justify-content:center;height:88px;width:90px;flex-shrink:0}
+    .img-wrap img{max-height:86px;max-width:88px;object-fit:contain;display:block;border-radius:4px}
+    .logo-wrap{display:flex;align-items:center;justify-content:center;width:88px;flex-shrink:0}
+    .logo-wrap img{max-height:40px;max-width:86px;object-fit:contain;display:block}
     .set-name{font-size:0.95rem;font-weight:600}
-    .set-code{font-size:0.73rem;color:#888;margin-top:2px}
+    .set-name-jp{font-size:0.8rem;color:#555;margin-top:3px;font-weight:400}
+    .set-code{font-size:0.73rem;color:#aaa;margin-top:3px}
+    .price-wrap{display:flex;align-items:center;justify-content:flex-end;gap:3px}
+    .price-symbol{font-size:0.78rem;color:#888}
+    .price-input{width:72px;border:1px solid #e0e0ed;border-radius:6px;padding:5px 7px;font-size:0.85rem;text-align:right;color:#1a1a2e;background:#fafafe;font-family:inherit;transition:border-color .15s,background .15s;-moz-appearance:textfield}
+    .price-input::-webkit-inner-spin-button,.price-input::-webkit-outer-spin-button{-webkit-appearance:none}
+    .price-input:focus{outline:none;border-color:#7B2FBE;background:#fff;box-shadow:0 0 0 3px rgba(123,47,190,0.08)}
+    .price-input:hover:not(:focus){border-color:#c0c0d8}
     .note{margin-top:36px;text-align:center;font-size:0.74rem;color:#999;line-height:1.7}
-    @media print{body{background:white;padding:0}header{border-radius:0;box-shadow:none}tbody tr{break-inside:avoid}}
+    @media print{body{background:white;padding:0}header{border-radius:0;box-shadow:none}tbody tr{break-inside:avoid}.price-input{border:none;background:transparent}}
   </style>
   <script>
     function tryNext(img, sources, idx) {
@@ -41,6 +53,22 @@
       img.onerror = function() { tryNext(img, sources, idx+1); };
       img.src = sources[idx];
     }
+
+    const PRICES_KEY = 'jp-pokemon-tcg-prices';
+    function getPrices() { return JSON.parse(localStorage.getItem(PRICES_KEY) || '{}'); }
+    function setPrice(key, val) {
+      const p = getPrices();
+      p[key] = val;
+      localStorage.setItem(PRICES_KEY, JSON.stringify(p));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const prices = getPrices();
+      document.querySelectorAll('.price-input').forEach(inp => {
+        inp.value = prices[inp.dataset.key] ?? 0;
+        inp.addEventListener('change', () => setPrice(inp.dataset.key, inp.value));
+      });
+    });
   </script>
 </head>
 <body>
@@ -52,42 +80,77 @@
 <section class="era-section">
   <div class="era-header era-mega"><span class="pokeball"></span>MEGA Era &nbsp;(2025 &ndash; 2026)</div>
   <table>
-    <thead><tr><th>Booster</th><th>English Set Name</th><th>Release Date</th></tr></thead>
+    <thead><tr><th>Booster &amp; Logo</th><th>Set Name</th><th>Release Date</th><th>Buy (¥)</th><th>Sell (¥)</th></tr></thead>
     <tbody>
       <tr>
-        <td><div class='img-wrap'><img alt='Abyss Eye' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBMTN4QWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--53342ff39aee9401d9cf183c05493cc98fed56ca/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/abisueye.jpg'></div></td>
-        <td><div class='set-name'>Abyss Eye</div><div class='set-code'>MG6</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Abyss Eye' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBMTN4QWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--53342ff39aee9401d9cf183c05493cc98fed56ca/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/abisueye.jpg'></div>
+          <div class='logo-wrap'><img alt='Abyss Eye logo' src='https://assets.tcgdex.net/jp/mg/mg6/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Abyss Eye</div><div class='set-name-jp'>アビスアイ</div><div class='set-code'>MG6</div></td>
         <td>May 22, 2026</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG6-abyss-eye-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG6-abyss-eye-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Ninja Spinner' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNWJyQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--8c330bd696be9082a0ae12cdd1deafae4b992b9f/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/m4pkg.jpg'></div></td>
-        <td><div class='set-name'>Ninja Spinner</div><div class='set-code'>MG5</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Ninja Spinner' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNWJyQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--8c330bd696be9082a0ae12cdd1deafae4b992b9f/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/m4pkg.jpg'></div>
+          <div class='logo-wrap'><img alt='Ninja Spinner logo' src='https://assets.tcgdex.net/jp/mg/mg5/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Ninja Spinner</div><div class='set-name-jp'>ニンジャスピナー</div><div class='set-code'>MG5</div></td>
         <td>March 13, 2026</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG5-ninja-spinner-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG5-ninja-spinner-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Nihil Zero' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBOFBVQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--641888ac1bf8f1ebca7882f02fc4ffa32c1433ba/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/m3.jpg'></div></td>
-        <td><div class='set-name'>Nihil Zero</div><div class='set-code'>MG4</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Nihil Zero' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBOFBVQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--641888ac1bf8f1ebca7882f02fc4ffa32c1433ba/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/m3.jpg'></div>
+          <div class='logo-wrap'><img alt='Nihil Zero logo' src='https://assets.tcgdex.net/jp/mg/mg4/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Nihil Zero</div><div class='set-name-jp'>ニヒルゼロ</div><div class='set-code'>MG4</div></td>
         <td>January 23, 2026</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG4-nihil-zero-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG4-nihil-zero-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Mega Dream ex' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBd2pGQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--7e8e30b5389b94a6badda75c05942dc24356be8e/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/m2a.jpg'></div></td>
-        <td><div class='set-name'>Mega Dream ex</div><div class='set-code'>MG3</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Mega Dream ex' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBd2pGQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--7e8e30b5389b94a6badda75c05942dc24356be8e/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/m2a.jpg'></div>
+          <div class='logo-wrap'><img alt='Mega Dream ex logo' src='https://assets.tcgdex.net/jp/mg/mg3/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Mega Dream ex</div><div class='set-name-jp'>メガドリームex</div><div class='set-code'>MG3</div></td>
         <td>November 28, 2025</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG3-mega-dream-ex-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG3-mega-dream-ex-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Inferno X' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBMkdvQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--924f7d2460f63af8518a85b317095df758422363/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/M2.jpg'></div></td>
-        <td><div class='set-name'>Inferno X</div><div class='set-code'>MG2</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Inferno X' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBMkdvQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--924f7d2460f63af8518a85b317095df758422363/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/M2.jpg'></div>
+          <div class='logo-wrap'><img alt='Inferno X logo' src='https://assets.tcgdex.net/jp/mg/mg2/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Inferno X</div><div class='set-name-jp'>インフェルノX</div><div class='set-code'>MG2</div></td>
         <td>September 26, 2025</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG2-inferno-x-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG2-inferno-x-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Mega Symphonia' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNkdLQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--6c0bc4cc0024bab599b3470e30096702494f2795/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/M1S.jpg'></div></td>
-        <td><div class='set-name'>Mega Symphonia</div><div class='set-code'>MG1</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Mega Symphonia' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNkdLQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--6c0bc4cc0024bab599b3470e30096702494f2795/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/M1S.jpg'></div>
+          <div class='logo-wrap'><img alt='Mega Symphonia logo' src='https://assets.tcgdex.net/jp/mg/mg1s/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Mega Symphonia</div><div class='set-name-jp'>メガシンフォニア</div><div class='set-code'>MG1</div></td>
         <td>August 1, 2025</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG1-mega-symphonia-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG1-mega-symphonia-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Mega Brave' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNkNLQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--4e860a77706f18648a1ace88b19c3f540512b928/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/M1L.jpg'></div></td>
-        <td><div class='set-name'>Mega Brave</div><div class='set-code'>MG1</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Mega Brave' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNkNLQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--4e860a77706f18648a1ace88b19c3f540512b928/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/M1L.jpg'></div>
+          <div class='logo-wrap'><img alt='Mega Brave logo' src='https://assets.tcgdex.net/jp/mg/mg1l/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Mega Brave</div><div class='set-name-jp'>メガブレイブ</div><div class='set-code'>MG1</div></td>
         <td>August 1, 2025</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG1-mega-brave-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG1-mega-brave-sell'/></div></td>
       </tr>
     </tbody>
   </table>
@@ -96,139 +159,265 @@
 <section class="era-section">
   <div class="era-header era-sv"><span class="pokeball"></span>Scarlet &amp; Violet Era &nbsp;(2023 &ndash; 2025)</div>
   <table>
-    <thead><tr><th>Booster</th><th>English Set Name</th><th>Release Date</th></tr></thead>
+    <thead><tr><th>Booster &amp; Logo</th><th>Set Name</th><th>Release Date</th><th>Buy (¥)</th><th>Sell (¥)</th></tr></thead>
     <tbody>
       <tr>
-        <td><div class='img-wrap'><img alt='White Flare' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBL04wQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--2397dfea4d8d8541a15ca23549cd314d2326f0c5/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/whiteflare.png'></div></td>
-        <td><div class='set-name'>White Flare</div><div class='set-code'>SV10b</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='White Flare' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBL04wQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--2397dfea4d8d8541a15ca23549cd314d2326f0c5/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/whiteflare.png'></div>
+          <div class='logo-wrap'><img alt='White Flare logo' src='https://assets.tcgdex.net/jp/sv/sv10b/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>White Flare</div><div class='set-name-jp'>ホワイトフレア</div><div class='set-code'>SV10b</div></td>
         <td>June 6, 2025</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10b-white-flare-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10b-white-flare-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Black Bolt' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBL0YwQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--015349dad0faeeb393f84d90b5c1ca486cd8da8f/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/blackbolt.png'></div></td>
-        <td><div class='set-name'>Black Bolt</div><div class='set-code'>SV10a</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Black Bolt' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBL0YwQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--015349dad0faeeb393f84d90b5c1ca486cd8da8f/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/blackbolt.png'></div>
+          <div class='logo-wrap'><img alt='Black Bolt logo' src='https://assets.tcgdex.net/jp/sv/sv10a/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Black Bolt</div><div class='set-name-jp'>ブラックボルト</div><div class='set-code'>SV10a</div></td>
         <td>June 6, 2025</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10a-black-bolt-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10a-black-bolt-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Glory of Team Rocket' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBN2x0QWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--13c0d0a7aabd94803be0345291f781ee1bd79f95/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/infoProduct-img-1-1.png'></div></td>
-        <td><div class='set-name'>Glory of Team Rocket</div><div class='set-code'>SV10</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Glory of Team Rocket' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBN2x0QWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--13c0d0a7aabd94803be0345291f781ee1bd79f95/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/infoProduct-img-1-1.png'></div>
+          <div class='logo-wrap'><img alt='Glory of Team Rocket logo' src='https://assets.tcgdex.net/jp/sv/sv10/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Glory of Team Rocket</div><div class='set-name-jp'>ロケット団の栄光</div><div class='set-code'>SV10</div></td>
         <td>April 18, 2025</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10-glory-team-rocket-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10-glory-team-rocket-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Hot Air Arena' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBM0pqQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--90b001b26dea71a100588f52941b4524c97584a9/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/sv9a_pillow.jpg'></div></td>
-        <td><div class='set-name'>Hot Air Arena</div><div class='set-code'>SV9a</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Hot Air Arena' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBM0pqQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--90b001b26dea71a100588f52941b4524c97584a9/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/sv9a_pillow.jpg'></div>
+          <div class='logo-wrap'><img alt='Hot Air Arena logo' src='https://assets.tcgdex.net/jp/sv/sv9a/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Hot Air Arena</div><div class='set-name-jp'>熱風のアリーナ</div><div class='set-code'>SV9a</div></td>
         <td>March 14, 2025</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV9a-hot-air-arena-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV9a-hot-air-arena-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Battle Partners' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNllkQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--5ab14e4d97dbac52d277f80c20e728f76f9bebe3/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/infoProduct-img-1.png'></div></td>
-        <td><div class='set-name'>Battle Partners</div><div class='set-code'>SV9</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Battle Partners' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNllkQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--5ab14e4d97dbac52d277f80c20e728f76f9bebe3/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/infoProduct-img-1.png'></div>
+          <div class='logo-wrap'><img alt='Battle Partners logo' src='https://assets.tcgdex.net/jp/sv/sv9/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Battle Partners</div><div class='set-name-jp'>バトルパートナーズ</div><div class='set-code'>SV9</div></td>
         <td>January 24, 2025</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV9-battle-partners-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV9-battle-partners-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Terastal Festival ex' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBOXdkQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--893e3e575952d5c7fd606773a520435424b2fd7f/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/product-image-1-2.png'></div></td>
-        <td><div class='set-name'>Terastal Festival ex</div><div class='set-code'>SV8a</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Terastal Festival ex' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBOXdkQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--893e3e575952d5c7fd606773a520435424b2fd7f/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/product-image-1-2.png'></div>
+          <div class='logo-wrap'><img alt='Terastal Festival ex logo' src='https://assets.tcgdex.net/jp/sv/sv8a/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Terastal Festival ex</div><div class='set-name-jp'>テラスタルフェスex</div><div class='set-code'>SV8a</div></td>
         <td>December 6, 2024</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV8a-terastal-festival-ex-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV8a-terastal-festival-ex-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Super Electric Breaker' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBM1FDQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--cde770073d3cf7085742b410d2601c1b757fdc50/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/pakku_choudenbureika.jpg'></div></td>
-        <td><div class='set-name'>Super Electric Breaker</div><div class='set-code'>SV8</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Super Electric Breaker' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBM1FDQWc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--cde770073d3cf7085742b410d2601c1b757fdc50/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/pakku_choudenbureika.jpg'></div>
+          <div class='logo-wrap'><img alt='Super Electric Breaker logo' src='https://assets.tcgdex.net/jp/sv/sv8/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Super Electric Breaker</div><div class='set-name-jp'>超電ブレイカー</div><div class='set-code'>SV8</div></td>
         <td>October 18, 2024</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV8-super-electric-breaker-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV8-super-electric-breaker-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Paradise Dragona' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBOXIyQVE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--b38411e9a6ed2421d8145dc8a1b74e8d22e03152/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1542_SV7a_pillow_img.png'></div></td>
-        <td><div class='set-name'>Paradise Dragona</div><div class='set-code'>SV7a</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Paradise Dragona' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBOXIyQVE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--b38411e9a6ed2421d8145dc8a1b74e8d22e03152/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1542_SV7a_pillow_img.png'></div>
+          <div class='logo-wrap'><img alt='Paradise Dragona logo' src='https://assets.tcgdex.net/jp/sv/sv7a/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Paradise Dragona</div><div class='set-name-jp'>パラダイスドラゴーナ</div><div class='set-code'>SV7a</div></td>
         <td>September 13, 2024</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV7a-paradise-dragona-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV7a-paradise-dragona-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Stellar Miracle' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBczRkIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--1115acabb80277b95f690c1c751ca758600cbc3c/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1538_SV7_pillow_img.png'></div></td>
-        <td><div class='set-name'>Stellar Miracle</div><div class='set-code'>SV7</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Stellar Miracle' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBczRkIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--1115acabb80277b95f690c1c751ca758600cbc3c/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1538_SV7_pillow_img.png'></div>
+          <div class='logo-wrap'><img alt='Stellar Miracle logo' src='https://assets.tcgdex.net/jp/sv/sv7/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Stellar Miracle</div><div class='set-name-jp'>ステラミラクル</div><div class='set-code'>SV7</div></td>
         <td>July 19, 2024</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV7-stellar-miracle-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV7-stellar-miracle-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Night Wanderer' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBazEzIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--31b27876fc1a24002086e6c381fced41d71817c4/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/sv6a.jpg'></div></td>
-        <td><div class='set-name'>Night Wanderer</div><div class='set-code'>SV6a</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Night Wanderer' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBazEzIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--31b27876fc1a24002086e6c381fced41d71817c4/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/sv6a.jpg'></div>
+          <div class='logo-wrap'><img alt='Night Wanderer logo' src='https://assets.tcgdex.net/jp/sv/sv6a/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Night Wanderer</div><div class='set-name-jp'>ナイトワンダラー</div><div class='set-code'>SV6a</div></td>
         <td>June 7, 2024</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV6a-night-wanderer-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV6a-night-wanderer-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Mask of Change' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBa0llIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--6135f0ffd83403d36ec1a5d726252334736b2f81/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1531_SV6_pillow_img_%E5%86%8D%E7%B4%8D%E5%93%81.png'></div></td>
-        <td><div class='set-name'>Mask of Change</div><div class='set-code'>SV6</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Mask of Change' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBa0llIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--6135f0ffd83403d36ec1a5d726252334736b2f81/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1531_SV6_pillow_img_%E5%86%8D%E7%B4%8D%E5%93%81.png'></div>
+          <div class='logo-wrap'><img alt='Mask of Change logo' src='https://assets.tcgdex.net/jp/sv/sv6/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Mask of Change</div><div class='set-name-jp'>変幻の仮面</div><div class='set-code'>SV6</div></td>
         <td>April 26, 2024</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV6-mask-of-change-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV6-mask-of-change-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Crimson Haze' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBb01lIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9196bf66bd5aed6f64da4a81695beaa45184a4ff/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8.png'></div></td>
-        <td><div class='set-name'>Crimson Haze</div><div class='set-code'>SV5a</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Crimson Haze' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBb01lIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9196bf66bd5aed6f64da4a81695beaa45184a4ff/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8.png'></div>
+          <div class='logo-wrap'><img alt='Crimson Haze logo' src='https://assets.tcgdex.net/jp/sv/sv5a/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Crimson Haze</div><div class='set-name-jp'>クリムゾンヘイズ</div><div class='set-code'>SV5a</div></td>
         <td>March 22, 2024</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5a-crimson-haze-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5a-crimson-haze-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Cyber Judge' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcTRlIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--ccf9d73927294d204e60b48399947db624328290/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1528_SV5M_pillow_img.png'></div></td>
-        <td><div class='set-name'>Cyber Judge</div><div class='set-code'>SV5M</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Cyber Judge' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcTRlIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--ccf9d73927294d204e60b48399947db624328290/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1528_SV5M_pillow_img.png'></div>
+          <div class='logo-wrap'><img alt='Cyber Judge logo' src='https://assets.tcgdex.net/jp/sv/sv5m/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Cyber Judge</div><div class='set-name-jp'>サイバージャッジ</div><div class='set-code'>SV5M</div></td>
         <td>January 26, 2024</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5M-cyber-judge-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5M-cyber-judge-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Wild Force' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcTBlIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--20124731eaa26574be107f82ace4df3e8b5eca4d/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1527_SV5K_pillow_img.png'></div></td>
-        <td><div class='set-name'>Wild Force</div><div class='set-code'>SV5K</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Wild Force' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcTBlIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--20124731eaa26574be107f82ace4df3e8b5eca4d/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1527_SV5K_pillow_img.png'></div>
+          <div class='logo-wrap'><img alt='Wild Force logo' src='https://assets.tcgdex.net/jp/sv/sv5k/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Wild Force</div><div class='set-name-jp'>ワイルドフォース</div><div class='set-code'>SV5K</div></td>
         <td>January 26, 2024</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5K-wild-force-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5K-wild-force-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Shiny Treasure ex' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBdVVmIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--222224d09209b6786fb95f8d7bfab281c189ecc0/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1526_SV4a_pillow_img.png'></div></td>
-        <td><div class='set-name'>Shiny Treasure ex</div><div class='set-code'>SV4a</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Shiny Treasure ex' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBdVVmIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--222224d09209b6786fb95f8d7bfab281c189ecc0/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1526_SV4a_pillow_img.png'></div>
+          <div class='logo-wrap'><img alt='Shiny Treasure ex logo' src='https://assets.tcgdex.net/jp/sv/sv4a/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Shiny Treasure ex</div><div class='set-name-jp'>シャイニートレジャーex</div><div class='set-code'>SV4a</div></td>
         <td>December 1, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4a-shiny-treasure-ex-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4a-shiny-treasure-ex-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Future Flash' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbm9nIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9ddc2a526bfced266402e10224da6ff448929d1b/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1520_SV4M_pillow_img.png'></div></td>
-        <td><div class='set-name'>Future Flash</div><div class='set-code'>SV4M</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Future Flash' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbm9nIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9ddc2a526bfced266402e10224da6ff448929d1b/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1520_SV4M_pillow_img.png'></div>
+          <div class='logo-wrap'><img alt='Future Flash logo' src='https://assets.tcgdex.net/jp/sv/sv4m/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Future Flash</div><div class='set-name-jp'>未来の一閃</div><div class='set-code'>SV4M</div></td>
         <td>October 27, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4M-future-flash-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4M-future-flash-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Ancient Roar' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbnNnIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--812e4cbe63228d3f42337a756e16139faf136954/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1519_SV4K_pillow_img.png'></div></td>
-        <td><div class='set-name'>Ancient Roar</div><div class='set-code'>SV4K</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Ancient Roar' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbnNnIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--812e4cbe63228d3f42337a756e16139faf136954/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1519_SV4K_pillow_img.png'></div>
+          <div class='logo-wrap'><img alt='Ancient Roar logo' src='https://assets.tcgdex.net/jp/sv/sv4k/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Ancient Roar</div><div class='set-name-jp'>古代の咆哮</div><div class='set-code'>SV4K</div></td>
         <td>October 27, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4K-ancient-roar-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4K-ancient-roar-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Raging Surf' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBckVnIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9fd3c975639d8fe663a3374ed3a14b10c8edc5a9/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1512_SV3a_pillow_img.png'></div></td>
-        <td><div class='set-name'>Raging Surf</div><div class='set-code'>SV3a</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Raging Surf' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBckVnIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--9fd3c975639d8fe663a3374ed3a14b10c8edc5a9/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1512_SV3a_pillow_img.png'></div>
+          <div class='logo-wrap'><img alt='Raging Surf logo' src='https://assets.tcgdex.net/jp/sv/sv3a/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Raging Surf</div><div class='set-name-jp'>レイジングサーフ</div><div class='set-code'>SV3a</div></td>
         <td>September 22, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV3a-raging-surf-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV3a-raging-surf-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Ruler of the Black Flame' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBaEFoIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--e86d886060885952cf7da4a124f0d95a27bae277/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/81Y0FMCzMdL._AC_SL1500_.jpg'></div></td>
-        <td><div class='set-name'>Ruler of the Black Flame</div><div class='set-code'>SV3</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Ruler of the Black Flame' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBaEFoIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--e86d886060885952cf7da4a124f0d95a27bae277/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/81Y0FMCzMdL._AC_SL1500_.jpg'></div>
+          <div class='logo-wrap'><img alt='Ruler of the Black Flame logo' src='https://assets.tcgdex.net/jp/sv/sv3/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Ruler of the Black Flame</div><div class='set-name-jp'>黒炎の支配者</div><div class='set-code'>SV3</div></td>
         <td>July 28, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV3-ruler-black-flame-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV3-ruler-black-flame-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Pokemon Card 151' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbUloIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--83f0be9e1befb6cc813ec4ae9cda83cae24637a2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/SV2a_pillow_img_%E5%86%8D.png'></div></td>
-        <td><div class='set-name'>Pokemon Card 151</div><div class='set-code'>SV2a</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Pokemon Card 151' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbUloIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--83f0be9e1befb6cc813ec4ae9cda83cae24637a2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/SV2a_pillow_img_%E5%86%8D.png'></div>
+          <div class='logo-wrap'><img alt='Pokemon Card 151 logo' src='https://assets.tcgdex.net/jp/sv/sv2a/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Pokemon Card 151</div><div class='set-name-jp'>ポケモンカード151</div><div class='set-code'>SV2a</div></td>
         <td>June 16, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2a-pokemon-card-151-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2a-pokemon-card-151-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Clay Burst' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBdUloIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--50b17bfe6bbe6fdf726c7e25a9d0e7ed7d1979c2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/-products-2023-images-1509_SV2D_pillow_img.png'></div></td>
-        <td><div class='set-name'>Clay Burst</div><div class='set-code'>SV2D</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Clay Burst' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBdUloIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--50b17bfe6bbe6fdf726c7e25a9d0e7ed7d1979c2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/-products-2023-images-1509_SV2D_pillow_img.png'></div>
+          <div class='logo-wrap'><img alt='Clay Burst logo' src='https://assets.tcgdex.net/jp/sv/sv2d/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Clay Burst</div><div class='set-name-jp'>クレイバースト</div><div class='set-code'>SV2D</div></td>
         <td>April 14, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2D-clay-burst-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2D-clay-burst-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Snow Hazard' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBdU1oIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--dc9b9d3a369be6023dd755953ca5ed735aa2d8d4/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/-products-2023-images-1508_SV2P_pillow_img.png'></div></td>
-        <td><div class='set-name'>Snow Hazard</div><div class='set-code'>SV2P</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Snow Hazard' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBdU1oIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--dc9b9d3a369be6023dd755953ca5ed735aa2d8d4/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/-products-2023-images-1508_SV2P_pillow_img.png'></div>
+          <div class='logo-wrap'><img alt='Snow Hazard logo' src='https://assets.tcgdex.net/jp/sv/sv2p/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Snow Hazard</div><div class='set-name-jp'>スノーハザード</div><div class='set-code'>SV2P</div></td>
         <td>April 14, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2P-snow-hazard-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2P-snow-hazard-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Triplet Beat' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBZ3NpIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--2421b31119ded4342121d1fb85c5a989c09185c4/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1507_SV1a_pillow_img_%E5%86%8D.png'></div></td>
-        <td><div class='set-name'>Triplet Beat</div><div class='set-code'>SV1a</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Triplet Beat' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBZ3NpIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--2421b31119ded4342121d1fb85c5a989c09185c4/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1507_SV1a_pillow_img_%E5%86%8D.png'></div>
+          <div class='logo-wrap'><img alt='Triplet Beat logo' src='https://assets.tcgdex.net/jp/sv/sv1a/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Triplet Beat</div><div class='set-name-jp'>トリプレットビート</div><div class='set-code'>SV1a</div></td>
         <td>March 10, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1a-triplet-beat-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1a-triplet-beat-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Violet ex' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbDhpIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--846f9d1a68988a220b40aa8b611768c34937e4f2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1502_SV1V_pillow_img_0801.png'></div></td>
-        <td><div class='set-name'>Violet ex</div><div class='set-code'>SV1V</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Violet ex' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbDhpIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--846f9d1a68988a220b40aa8b611768c34937e4f2/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/1502_SV1V_pillow_img_0801.png'></div>
+          <div class='logo-wrap'><img alt='Violet ex logo' src='https://assets.tcgdex.net/jp/sv/sv1v/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Violet ex</div><div class='set-name-jp'>バイオレットex</div><div class='set-code'>SV1V</div></td>
         <td>January 20, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1V-violet-ex-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1V-violet-ex-sell'/></div></td>
       </tr>
       <tr>
-        <td><div class='img-wrap'><img alt='Scarlet ex' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbGtpIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--11d8c580464f476c156fe24a76e4c4f8aa35d731/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/81t13c%2Bb%2BpL._AC_SL1500_.jpg'></div></td>
-        <td><div class='set-name'>Scarlet ex</div><div class='set-code'>SV1S</div></td>
+        <td><div class='media-cell'>
+          <div class='img-wrap'><img alt='Scarlet ex' src='https://www.artofpkm.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbGtpIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--11d8c580464f476c156fe24a76e4c4f8aa35d731/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDRG9MWm05eWJXRjBPZ2wzWldKd09oUnlaWE5wZW1WZmRHOWZiR2x0YVhSYkIya0MwQWRwQXRBSE9neHhkV0ZzYVhSNWFXUT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--ed2d6d11a2959980a13c5ee4344539bfee99a0a7/81t13c%2Bb%2BpL._AC_SL1500_.jpg'></div>
+          <div class='logo-wrap'><img alt='Scarlet ex logo' src='https://assets.tcgdex.net/jp/sv/sv1s/logo.webp' onerror="this.style.display='none'"/></div>
+        </div></td>
+        <td><div class='set-name'>Scarlet ex</div><div class='set-name-jp'>スカーレットex</div><div class='set-code'>SV1S</div></td>
         <td>January 20, 2023</td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1S-scarlet-ex-buy'/></div></td>
+        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1S-scarlet-ex-sell'/></div></td>
       </tr>
     </tbody>
   </table>
 </section>
 
 <p class="note">
-  Booster pack images from <a href="https://www.artofpkm.com" style="color:#888">artofpkm.com</a> &nbsp;&middot;&nbsp; Requires internet connection<br>
+  Booster pack images from <a href="https://www.artofpkm.com" style="color:#888">artofpkm.com</a> &nbsp;&middot;&nbsp; Set logos from <a href="https://tcgdex.net" style="color:#888">TCGdex</a> &nbsp;&middot;&nbsp; Requires internet connection<br>
+  Prices are saved locally in your browser &nbsp;&middot;&nbsp;
   <strong>Save as PDF:</strong> Chrome &rarr; File &rarr; Print &rarr; Save as PDF &nbsp;(enable &ldquo;Background graphics&rdquo;)
 </p>
 </body>
