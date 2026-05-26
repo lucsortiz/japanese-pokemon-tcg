@@ -12,6 +12,7 @@
     header{background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%);color:white;border-radius:16px;padding:30px 40px;margin-bottom:40px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
     header h1{font-size:1.8rem;font-weight:700;margin-bottom:6px}
     header p{font-size:0.88rem;opacity:0.7}
+    #sync-status{margin-top:10px;font-size:0.8rem;font-weight:500;opacity:0.9;min-height:1.2em}
     .era-section{margin-bottom:52px}
     .era-header{display:flex;align-items:center;gap:12px;padding:13px 24px;border-radius:12px 12px 0 0;font-size:1.05rem;font-weight:700;color:white}
     .era-sv{background:linear-gradient(90deg,#CC0000,#FF6B35)}
@@ -39,7 +40,9 @@
     .set-name-jp{font-size:0.8rem;color:#555;margin-top:3px;font-weight:400}
     .set-code{font-size:0.73rem;color:#aaa;margin-top:3px}
     .price-wrap{display:flex;align-items:center;justify-content:flex-end;gap:3px}
-    .price-symbol{font-size:0.78rem;color:#888}
+    .price-wrap::before{font-size:0.78rem;color:#888;flex-shrink:0}
+    .price-wrap.buy::before{content:'¥'}
+    .price-wrap.sell::before{content:'€'}
     .price-input{width:72px;border:1px solid #e0e0ed;border-radius:6px;padding:5px 7px;font-size:0.85rem;text-align:right;color:#1a1a2e;background:#fafafe;font-family:inherit;transition:border-color .15s,background .15s;-moz-appearance:textfield}
     .price-input::-webkit-inner-spin-button,.price-input::-webkit-outer-spin-button{-webkit-appearance:none}
     .price-input:focus{outline:none;border-color:#7B2FBE;background:#fff;box-shadow:0 0 0 3px rgba(123,47,190,0.08)}
@@ -48,25 +51,73 @@
     @media print{body{background:white;padding:0}header{border-radius:0;box-shadow:none}tbody tr{break-inside:avoid}.price-input{border:none;background:transparent}}
   </style>
   <script>
+    // ── Database config ────────────────────────────────────────────────────────
+    // 1. Create a free account at https://jsonbin.io
+    // 2. Click "Create Bin", paste {} as content, save
+    // 3. Copy the Bin ID and your Master Key below
+    const DB_BIN_ID  = '';   // e.g. '6650a1f3ad19ca34f87e4b2c'
+    const DB_API_KEY = '';   // e.g. '$2a$10$abc...'
+    // ──────────────────────────────────────────────────────────────────────────
+
+    const BIN_URL = DB_BIN_ID ? `https://api.jsonbin.io/v3/b/${DB_BIN_ID}` : null;
+    let pricesCache = {};
+    let saveTimer   = null;
+
+    function setStatus(msg, color) {
+      const el = document.getElementById('sync-status');
+      if (el) { el.textContent = msg; el.style.color = color || 'rgba(255,255,255,0.7)'; }
+    }
+
+    async function loadPrices() {
+      if (!BIN_URL) {
+        setStatus('⚠ Set DB_BIN_ID and DB_API_KEY in the script to enable shared prices', '#ffcc44');
+        return;
+      }
+      setStatus('Loading prices…', 'rgba(255,255,255,0.7)');
+      try {
+        const res = await fetch(BIN_URL, { headers: { 'X-Master-Key': DB_API_KEY } });
+        const json = await res.json();
+        pricesCache = json.record || {};
+        document.querySelectorAll('.price-input').forEach(inp => {
+          inp.value = pricesCache[inp.dataset.key] ?? 0;
+        });
+        setStatus('Prices up to date ✓', '#7ef5a0');
+      } catch (e) {
+        setStatus('Could not load prices — check your DB config', '#ff8080');
+      }
+    }
+
+    function scheduleSync() {
+      if (!BIN_URL) return;
+      setStatus('Saving…', 'rgba(255,255,255,0.7)');
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(async () => {
+        try {
+          await fetch(BIN_URL, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Master-Key': DB_API_KEY },
+            body: JSON.stringify(pricesCache)
+          });
+          setStatus('Saved ✓', '#7ef5a0');
+        } catch (e) {
+          setStatus('Save failed — check your DB config', '#ff8080');
+        }
+      }, 800);
+    }
+
     function tryNext(img, sources, idx) {
-      if (idx >= sources.length) { img.style.opacity='0.2'; return; }
-      img.onerror = function() { tryNext(img, sources, idx+1); };
+      if (idx >= sources.length) { img.style.opacity = '0.2'; return; }
+      img.onerror = function() { tryNext(img, sources, idx + 1); };
       img.src = sources[idx];
     }
 
-    const PRICES_KEY = 'jp-pokemon-tcg-prices';
-    function getPrices() { return JSON.parse(localStorage.getItem(PRICES_KEY) || '{}'); }
-    function setPrice(key, val) {
-      const p = getPrices();
-      p[key] = val;
-      localStorage.setItem(PRICES_KEY, JSON.stringify(p));
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const prices = getPrices();
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadPrices();
       document.querySelectorAll('.price-input').forEach(inp => {
-        inp.value = prices[inp.dataset.key] ?? 0;
-        inp.addEventListener('change', () => setPrice(inp.dataset.key, inp.value));
+        inp.addEventListener('input', () => {
+          pricesCache[inp.dataset.key] = inp.value;
+          scheduleSync();
+        });
       });
     });
   </script>
@@ -75,12 +126,13 @@
 <header>
   <h1>&#127924; Japanese Pokemon TCG &#8212; Booster Sets</h1>
   <p>MEGA Era &amp; Scarlet &amp; Violet Era &nbsp;&middot;&nbsp; January 2023 &ndash; May 2026 &nbsp;&middot;&nbsp; 32 sets &nbsp;&middot;&nbsp; Newest first</p>
+  <div id="sync-status"></div>
 </header>
 
 <section class="era-section">
   <div class="era-header era-mega"><span class="pokeball"></span>MEGA Era &nbsp;(2025 &ndash; 2026)</div>
   <table>
-    <thead><tr><th>Booster &amp; Logo</th><th>Set Name</th><th>Release Date</th><th>Buy (¥)</th><th>Sell (¥)</th></tr></thead>
+    <thead><tr><th>Booster &amp; Logo</th><th>Set Name</th><th>Release Date</th><th>Buy (¥)</th><th>Sell (€)</th></tr></thead>
     <tbody>
       <tr>
         <td><div class='media-cell'>
@@ -89,8 +141,8 @@
         </div></td>
         <td><div class='set-name'>Abyss Eye</div><div class='set-name-jp'>アビスアイ</div><div class='set-code'>MG6</div></td>
         <td>May 22, 2026</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG6-abyss-eye-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG6-abyss-eye-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='MG6-abyss-eye-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='MG6-abyss-eye-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -99,8 +151,8 @@
         </div></td>
         <td><div class='set-name'>Ninja Spinner</div><div class='set-name-jp'>ニンジャスピナー</div><div class='set-code'>MG5</div></td>
         <td>March 13, 2026</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG5-ninja-spinner-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG5-ninja-spinner-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='MG5-ninja-spinner-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='MG5-ninja-spinner-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -109,8 +161,8 @@
         </div></td>
         <td><div class='set-name'>Nihil Zero</div><div class='set-name-jp'>ニヒルゼロ</div><div class='set-code'>MG4</div></td>
         <td>January 23, 2026</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG4-nihil-zero-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG4-nihil-zero-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='MG4-nihil-zero-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='MG4-nihil-zero-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -119,8 +171,8 @@
         </div></td>
         <td><div class='set-name'>Mega Dream ex</div><div class='set-name-jp'>メガドリームex</div><div class='set-code'>MG3</div></td>
         <td>November 28, 2025</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG3-mega-dream-ex-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG3-mega-dream-ex-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='MG3-mega-dream-ex-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='MG3-mega-dream-ex-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -129,8 +181,8 @@
         </div></td>
         <td><div class='set-name'>Inferno X</div><div class='set-name-jp'>インフェルノX</div><div class='set-code'>MG2</div></td>
         <td>September 26, 2025</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG2-inferno-x-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG2-inferno-x-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='MG2-inferno-x-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='MG2-inferno-x-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -139,8 +191,8 @@
         </div></td>
         <td><div class='set-name'>Mega Symphonia</div><div class='set-name-jp'>メガシンフォニア</div><div class='set-code'>MG1</div></td>
         <td>August 1, 2025</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG1-mega-symphonia-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG1-mega-symphonia-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='MG1-mega-symphonia-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='MG1-mega-symphonia-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -149,8 +201,8 @@
         </div></td>
         <td><div class='set-name'>Mega Brave</div><div class='set-name-jp'>メガブレイブ</div><div class='set-code'>MG1</div></td>
         <td>August 1, 2025</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG1-mega-brave-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='MG1-mega-brave-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='MG1-mega-brave-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='MG1-mega-brave-sell'/></div></td>
       </tr>
     </tbody>
   </table>
@@ -159,7 +211,7 @@
 <section class="era-section">
   <div class="era-header era-sv"><span class="pokeball"></span>Scarlet &amp; Violet Era &nbsp;(2023 &ndash; 2025)</div>
   <table>
-    <thead><tr><th>Booster &amp; Logo</th><th>Set Name</th><th>Release Date</th><th>Buy (¥)</th><th>Sell (¥)</th></tr></thead>
+    <thead><tr><th>Booster &amp; Logo</th><th>Set Name</th><th>Release Date</th><th>Buy (¥)</th><th>Sell (€)</th></tr></thead>
     <tbody>
       <tr>
         <td><div class='media-cell'>
@@ -168,8 +220,8 @@
         </div></td>
         <td><div class='set-name'>White Flare</div><div class='set-name-jp'>ホワイトフレア</div><div class='set-code'>SV10b</div></td>
         <td>June 6, 2025</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10b-white-flare-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10b-white-flare-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV10b-white-flare-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV10b-white-flare-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -178,8 +230,8 @@
         </div></td>
         <td><div class='set-name'>Black Bolt</div><div class='set-name-jp'>ブラックボルト</div><div class='set-code'>SV10a</div></td>
         <td>June 6, 2025</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10a-black-bolt-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10a-black-bolt-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV10a-black-bolt-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV10a-black-bolt-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -188,8 +240,8 @@
         </div></td>
         <td><div class='set-name'>Glory of Team Rocket</div><div class='set-name-jp'>ロケット団の栄光</div><div class='set-code'>SV10</div></td>
         <td>April 18, 2025</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10-glory-team-rocket-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV10-glory-team-rocket-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV10-glory-team-rocket-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV10-glory-team-rocket-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -198,8 +250,8 @@
         </div></td>
         <td><div class='set-name'>Hot Air Arena</div><div class='set-name-jp'>熱風のアリーナ</div><div class='set-code'>SV9a</div></td>
         <td>March 14, 2025</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV9a-hot-air-arena-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV9a-hot-air-arena-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV9a-hot-air-arena-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV9a-hot-air-arena-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -208,8 +260,8 @@
         </div></td>
         <td><div class='set-name'>Battle Partners</div><div class='set-name-jp'>バトルパートナーズ</div><div class='set-code'>SV9</div></td>
         <td>January 24, 2025</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV9-battle-partners-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV9-battle-partners-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV9-battle-partners-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV9-battle-partners-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -218,8 +270,8 @@
         </div></td>
         <td><div class='set-name'>Terastal Festival ex</div><div class='set-name-jp'>テラスタルフェスex</div><div class='set-code'>SV8a</div></td>
         <td>December 6, 2024</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV8a-terastal-festival-ex-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV8a-terastal-festival-ex-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV8a-terastal-festival-ex-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV8a-terastal-festival-ex-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -228,8 +280,8 @@
         </div></td>
         <td><div class='set-name'>Super Electric Breaker</div><div class='set-name-jp'>超電ブレイカー</div><div class='set-code'>SV8</div></td>
         <td>October 18, 2024</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV8-super-electric-breaker-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV8-super-electric-breaker-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV8-super-electric-breaker-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV8-super-electric-breaker-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -238,8 +290,8 @@
         </div></td>
         <td><div class='set-name'>Paradise Dragona</div><div class='set-name-jp'>パラダイスドラゴーナ</div><div class='set-code'>SV7a</div></td>
         <td>September 13, 2024</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV7a-paradise-dragona-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV7a-paradise-dragona-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV7a-paradise-dragona-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV7a-paradise-dragona-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -248,8 +300,8 @@
         </div></td>
         <td><div class='set-name'>Stellar Miracle</div><div class='set-name-jp'>ステラミラクル</div><div class='set-code'>SV7</div></td>
         <td>July 19, 2024</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV7-stellar-miracle-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV7-stellar-miracle-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV7-stellar-miracle-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV7-stellar-miracle-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -258,8 +310,8 @@
         </div></td>
         <td><div class='set-name'>Night Wanderer</div><div class='set-name-jp'>ナイトワンダラー</div><div class='set-code'>SV6a</div></td>
         <td>June 7, 2024</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV6a-night-wanderer-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV6a-night-wanderer-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV6a-night-wanderer-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV6a-night-wanderer-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -268,8 +320,8 @@
         </div></td>
         <td><div class='set-name'>Mask of Change</div><div class='set-name-jp'>変幻の仮面</div><div class='set-code'>SV6</div></td>
         <td>April 26, 2024</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV6-mask-of-change-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV6-mask-of-change-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV6-mask-of-change-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV6-mask-of-change-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -278,8 +330,8 @@
         </div></td>
         <td><div class='set-name'>Crimson Haze</div><div class='set-name-jp'>クリムゾンヘイズ</div><div class='set-code'>SV5a</div></td>
         <td>March 22, 2024</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5a-crimson-haze-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5a-crimson-haze-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV5a-crimson-haze-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV5a-crimson-haze-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -288,8 +340,8 @@
         </div></td>
         <td><div class='set-name'>Cyber Judge</div><div class='set-name-jp'>サイバージャッジ</div><div class='set-code'>SV5M</div></td>
         <td>January 26, 2024</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5M-cyber-judge-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5M-cyber-judge-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV5M-cyber-judge-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV5M-cyber-judge-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -298,8 +350,8 @@
         </div></td>
         <td><div class='set-name'>Wild Force</div><div class='set-name-jp'>ワイルドフォース</div><div class='set-code'>SV5K</div></td>
         <td>January 26, 2024</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5K-wild-force-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV5K-wild-force-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV5K-wild-force-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV5K-wild-force-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -308,8 +360,8 @@
         </div></td>
         <td><div class='set-name'>Shiny Treasure ex</div><div class='set-name-jp'>シャイニートレジャーex</div><div class='set-code'>SV4a</div></td>
         <td>December 1, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4a-shiny-treasure-ex-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4a-shiny-treasure-ex-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV4a-shiny-treasure-ex-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV4a-shiny-treasure-ex-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -318,8 +370,8 @@
         </div></td>
         <td><div class='set-name'>Future Flash</div><div class='set-name-jp'>未来の一閃</div><div class='set-code'>SV4M</div></td>
         <td>October 27, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4M-future-flash-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4M-future-flash-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV4M-future-flash-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV4M-future-flash-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -328,8 +380,8 @@
         </div></td>
         <td><div class='set-name'>Ancient Roar</div><div class='set-name-jp'>古代の咆哮</div><div class='set-code'>SV4K</div></td>
         <td>October 27, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4K-ancient-roar-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV4K-ancient-roar-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV4K-ancient-roar-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV4K-ancient-roar-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -338,8 +390,8 @@
         </div></td>
         <td><div class='set-name'>Raging Surf</div><div class='set-name-jp'>レイジングサーフ</div><div class='set-code'>SV3a</div></td>
         <td>September 22, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV3a-raging-surf-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV3a-raging-surf-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV3a-raging-surf-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV3a-raging-surf-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -348,8 +400,8 @@
         </div></td>
         <td><div class='set-name'>Ruler of the Black Flame</div><div class='set-name-jp'>黒炎の支配者</div><div class='set-code'>SV3</div></td>
         <td>July 28, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV3-ruler-black-flame-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV3-ruler-black-flame-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV3-ruler-black-flame-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV3-ruler-black-flame-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -358,8 +410,8 @@
         </div></td>
         <td><div class='set-name'>Pokemon Card 151</div><div class='set-name-jp'>ポケモンカード151</div><div class='set-code'>SV2a</div></td>
         <td>June 16, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2a-pokemon-card-151-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2a-pokemon-card-151-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV2a-pokemon-card-151-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV2a-pokemon-card-151-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -368,8 +420,8 @@
         </div></td>
         <td><div class='set-name'>Clay Burst</div><div class='set-name-jp'>クレイバースト</div><div class='set-code'>SV2D</div></td>
         <td>April 14, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2D-clay-burst-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2D-clay-burst-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV2D-clay-burst-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV2D-clay-burst-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -378,8 +430,8 @@
         </div></td>
         <td><div class='set-name'>Snow Hazard</div><div class='set-name-jp'>スノーハザード</div><div class='set-code'>SV2P</div></td>
         <td>April 14, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2P-snow-hazard-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV2P-snow-hazard-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV2P-snow-hazard-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV2P-snow-hazard-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -388,8 +440,8 @@
         </div></td>
         <td><div class='set-name'>Triplet Beat</div><div class='set-name-jp'>トリプレットビート</div><div class='set-code'>SV1a</div></td>
         <td>March 10, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1a-triplet-beat-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1a-triplet-beat-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV1a-triplet-beat-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV1a-triplet-beat-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -398,8 +450,8 @@
         </div></td>
         <td><div class='set-name'>Violet ex</div><div class='set-name-jp'>バイオレットex</div><div class='set-code'>SV1V</div></td>
         <td>January 20, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1V-violet-ex-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1V-violet-ex-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV1V-violet-ex-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV1V-violet-ex-sell'/></div></td>
       </tr>
       <tr>
         <td><div class='media-cell'>
@@ -408,16 +460,15 @@
         </div></td>
         <td><div class='set-name'>Scarlet ex</div><div class='set-name-jp'>スカーレットex</div><div class='set-code'>SV1S</div></td>
         <td>January 20, 2023</td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1S-scarlet-ex-buy'/></div></td>
-        <td><div class='price-wrap'><span class='price-symbol'>¥</span><input class='price-input' type='number' min='0' step='1' data-key='SV1S-scarlet-ex-sell'/></div></td>
+        <td><div class='price-wrap buy'><input class='price-input' type='number' min='0' step='1' data-key='SV1S-scarlet-ex-buy'/></div></td>
+        <td><div class='price-wrap sell'><input class='price-input' type='number' min='0' step='0.01' data-key='SV1S-scarlet-ex-sell'/></div></td>
       </tr>
     </tbody>
   </table>
 </section>
 
 <p class="note">
-  Booster pack images from <a href="https://www.artofpkm.com" style="color:#888">artofpkm.com</a> &nbsp;&middot;&nbsp; Set logos from <a href="https://tcgdex.net" style="color:#888">TCGdex</a> &nbsp;&middot;&nbsp; Requires internet connection<br>
-  Prices are saved locally in your browser &nbsp;&middot;&nbsp;
+  Booster pack images from <a href="https://www.artofpkm.com" style="color:#888">artofpkm.com</a> &nbsp;&middot;&nbsp; Set logos from <a href="https://tcgdex.net" style="color:#888">TCGdex</a> &nbsp;&middot;&nbsp; Prices stored in <a href="https://jsonbin.io" style="color:#888">JSONBin</a><br>
   <strong>Save as PDF:</strong> Chrome &rarr; File &rarr; Print &rarr; Save as PDF &nbsp;(enable &ldquo;Background graphics&rdquo;)
 </p>
 </body>
