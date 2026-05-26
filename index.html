@@ -61,8 +61,8 @@
     //      create policy "public read"  on prices for select using (true);
     //      create policy "public write" on prices for all    using (true);
     // 2. Settings → API → copy Project URL and anon/public key below
-    const SUPABASE_URL      = '';   // e.g. 'https://xxxx.supabase.co'
-    const SUPABASE_ANON_KEY = '';   // anon / public key
+    const SUPABASE_URL      = '__SUPABASE_URL__';
+    const SUPABASE_ANON_KEY = '__SUPABASE_ANON_KEY__';
     // ──────────────────────────────────────────────────────────────────────────
 
     const API = SUPABASE_URL ? `${SUPABASE_URL}/rest/v1/prices` : null;
