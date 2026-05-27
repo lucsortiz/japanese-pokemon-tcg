@@ -348,7 +348,7 @@
       gap:4px;
     }
     .input-label{
-      font-size:.65rem;
+      font-size:.85rem;
       font-weight:700;
       letter-spacing:.12em;
       text-transform:uppercase;
@@ -368,7 +368,7 @@
       font-weight:700;
       color:var(--text);
       font-family:'Bricolage Grotesque','Inter',sans-serif;
-      text-align:right;
+      text-align:left;
       letter-spacing:0.02em;
     }
     
@@ -453,9 +453,6 @@
       }
     }
 
-    
-    }
-
     function tryNext(img, sources, idx) {
       if (idx >= sources.length) { img.style.opacity = '0.15'; return; }
       img.onerror = function() { tryNext(img, sources, idx + 1); };
@@ -501,10 +498,6 @@
         <div class="set-meta"><span class="set-code">MG6</span><span>May 22, 2026</span></div>
       </div>
       <div class="card-inputs">
-        <div class="input-group">
-          <span class="input-label"><span class="sym">¥</span>Buy</span>
-          <div class="price-display" data-key="MG6-abyss-eye-buy">0</div>
-        </div>
         <div class="input-group">
           <span class="input-label"><span class="sym">€</span>Sell</span>
           <div class="price-display" data-key="MG6-abyss-eye-sell">0.00</div>
