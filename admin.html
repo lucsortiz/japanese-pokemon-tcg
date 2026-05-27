@@ -1110,7 +1110,7 @@ async function login(){
   const errorEl = document.getElementById("login-error");
   errorEl.textContent = "Logging in...";
   
-  if (!AUTH_API || AUTH_API.includes('__SUPABASE_URL__')) {
+  if (!AUTH_API || SUPABASE_URL.startsWith('__')) {
     errorEl.textContent = "Supabase URL not configured.";
     return;
   }
