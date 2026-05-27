@@ -255,6 +255,7 @@
       padding:24px 20px 16px;
       display:flex;
       align-items:center;
+      flex-direction:column;
       justify-content:center;
       gap:18px;
       background:radial-gradient(ellipse at center bottom, rgba(181,55,242,.08), transparent 70%);
@@ -263,8 +264,8 @@
     .card.sv .card-media{ background:radial-gradient(ellipse at center bottom, rgba(0,240,255,.07), transparent 70%); }
 
     .booster-img{
-      width:130px;
-      height:170px;
+      width:180px;
+      height:235px;
       object-fit:contain;
       -webkit-mask-image:linear-gradient(to right, transparent 24%, black 26%, black 74%, transparent 76%);
               mask-image:linear-gradient(to right, transparent 24%, black 26%, black 74%, transparent 76%);
@@ -280,7 +281,7 @@
     }
 
     .set-logo{
-      max-width:130px;
+      max-width:150px;
       max-height:74px;
       object-fit:contain;
       filter:drop-shadow(0 0 6px rgba(255,255,255,.1));
@@ -500,6 +501,14 @@
       document.querySelectorAll('.price-input').forEach(inp => {
         inp.addEventListener('input', () => scheduleUpsert(inp.dataset.key, inp.value));
       });
+      
+      document.getElementById('search-box')?.addEventListener('input', e => {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('.card').forEach(card => {
+          card.style.display = card.textContent.toLowerCase().includes(term) ? 'flex' : 'none';
+        });
+      });
+  
       // Parallax: subtle tilt on cards based on mouse position within
       document.querySelectorAll('.card').forEach(card => {
         card.addEventListener('mousemove', e => {
@@ -528,6 +537,7 @@
   <a href="index.html" style="position:absolute; top:20px; right:20px; color:var(--text-dim); text-decoration:none; font-size:0.8rem;">&larr; Back to Public</a>
   <p>MEGA Era &amp; Scarlet &amp; Violet Era &nbsp;·&nbsp; January 2023 — May 2026 &nbsp;·&nbsp; 32 sets &nbsp;·&nbsp; Newest first</p>
   <div id="sync-status"></div>
+  <input type="text" id="search-box" placeholder="Search cards..." style="margin-top:16px; padding:10px 16px; width:100%; max-width:400px; border-radius:8px; border:1px solid var(--border); background:var(--bg-card); color:var(--text); font-family:inherit; font-size:1rem;" />
 </header>
 
 <section class="era-section">
