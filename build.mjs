@@ -19,10 +19,12 @@ const siteUrl =
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : 'http://localhost:4444');
 
-const file = 'index.html';
-let html = fs.readFileSync(file, 'utf8');
-html = html.replaceAll('__SUPABASE_URL__', must('SUPABASE_URL'));
-html = html.replaceAll('__SUPABASE_ANON_KEY__', must('SUPABASE_ANON_KEY'));
-html = html.replaceAll('__SITE_URL__', siteUrl.replace(/\/$/, ''));
-fs.writeFileSync(file, html);
-console.log(`Built ${file} (site URL: ${siteUrl})`);
+const files = ['index.html', 'admin.html'];
+for (const file of files) {
+  let html = fs.readFileSync(file, 'utf8');
+  html = html.replaceAll('__SUPABASE_URL__', must('SUPABASE_URL'));
+  html = html.replaceAll('__SUPABASE_ANON_KEY__', must('SUPABASE_ANON_KEY'));
+  html = html.replaceAll('__SITE_URL__', siteUrl.replace(/\/$/, ''));
+  fs.writeFileSync(file, html);
+  console.log(`Built ${file} (site URL: ${siteUrl})`);
+}
