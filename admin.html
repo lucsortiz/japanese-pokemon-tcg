@@ -430,11 +430,13 @@
   <script>
     const SUPABASE_URL      = '__SUPABASE_URL__';
     const SUPABASE_ANON_KEY = '__SUPABASE_ANON_KEY__';
+    let accessToken = null;
 
     const API = SUPABASE_URL ? `${SUPABASE_URL}/rest/v1/prices` : null;
+    const AUTH_API = SUPABASE_URL ? `${SUPABASE_URL}/auth/v1/token?grant_type=password` : null;
     const HEADERS = () => ({
       'apikey':        SUPABASE_ANON_KEY,
-      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Authorization': `Bearer ${accessToken || SUPABASE_ANON_KEY}`,
       'Content-Type':  'application/json'
     });
 
@@ -514,8 +516,10 @@
 <body>
 <div id="login-overlay" style="position:fixed; inset:0; background:var(--bg-deep); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
   <h2 style="font-family:'Bricolage Grotesque',sans-serif; margin-bottom:1rem;">Admin Login</h2>
+  <input type="email" id="admin-email" placeholder="Email" style="padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-card); color:var(--text); font-size:1rem; margin-bottom:10px;"/>
   <input type="password" id="admin-pass" placeholder="Password" style="padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-card); color:var(--text); font-size:1rem; margin-bottom:1rem;" onkeydown="if(event.key==='Enter') login()"/>
-  <button onclick="login()" style="padding:10px 20px; border-radius:8px; background:var(--neon-pink); color:#fff; border:none; font-weight:bold; cursor:pointer;">Enter</button>
+  <button onclick="login()" style="padding:10px 20px; border-radius:8px; background:var(--neon-pink); color:#fff; border:none; font-weight:bold; cursor:pointer;">Login via Supabase</button>
+  <div id="login-error" style="color:var(--neon-pink); margin-top:10px; font-size:0.85rem;"></div>
 </div>
 <div id="app-content" style="display:none;">
 
@@ -1100,12 +1104,31 @@
 
 </div>
 <script>
-function login(){
-  if(document.getElementById("admin-pass").value === "admin"){
+async function login(){
+  const email = document.getElementById("admin-email").value;
+  const password = document.getElementById("admin-pass").value;
+  const errorEl = document.getElementById("login-error");
+  errorEl.textContent = "Logging in...";
+  
+  if (!AUTH_API || AUTH_API.includes('__SUPABASE_URL__')) {
+    errorEl.textContent = "Supabase URL not configured.";
+    return;
+  }
+  
+  try {
+    const res = await fetch(AUTH_API, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error_description || data.msg || "Login failed");
+    
+    accessToken = data.access_token;
     document.getElementById("login-overlay").style.display="none";
     document.getElementById("app-content").style.display="block";
-  } else {
-    alert("Incorrect");
+  } catch(e) {
+    errorEl.textContent = e.message;
   }
 }
 </script>
