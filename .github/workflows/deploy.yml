@@ -23,13 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Inject Supabase credentials
+      - name: Inject env vars
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        run: |
-          sed -i "s|__SUPABASE_URL__|${SUPABASE_URL}|g" index.html
-          sed -i "s|__SUPABASE_ANON_KEY__|${SUPABASE_ANON_KEY}|g" index.html
+          SITE_URL: ${{ vars.SITE_URL || 'https://lucsortiz.github.io/japanese-pokemon-tcg' }}
+        run: node build.mjs
 
       - uses: actions/upload-pages-artifact@v3
         with:
