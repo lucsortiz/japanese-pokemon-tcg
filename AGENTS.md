@@ -94,6 +94,14 @@ SUPABASE_URL='...' SUPABASE_ANON_KEY='...' SITE_URL='http://localhost:4444' node
 git checkout index.html   # restore placeholders before committing
 ```
 
+## Admin page testing
+
+`admin.html` is gated by a Supabase Auth password login. A reusable test user is provisioned in the project's Supabase Auth so agents can exercise the edit flow end-to-end (load prices, edit an input, watch the debounced upsert, verify on reload).
+
+Credentials live in the gitignored `.env` at the repo root (`ADMIN_TEST_EMAIL` / `ADMIN_TEST_PASSWORD`). The static site does **not** read `.env` itself — copy the values into the login form by hand (or via a browser automation tool) after running `build.mjs` with the Supabase env vars set.
+
+Use this account only for local/preview verification, never for production data. Don't paste the credentials into committed files, logs, or chat transcripts that will be persisted.
+
 ## Deploy
 
 - **Vercel (primary)**: pushes to `main` → automatic. Requires `SUPABASE_URL` and `SUPABASE_ANON_KEY` env vars set in the Vercel project. Optionally set `SITE_URL` for a custom domain.

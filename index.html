@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Japanese Pokemon TCG — SV &amp; MEGA Era Boosters</title>
-  <meta name="description" content="Buy/sell pricing and inventory tracker for Japanese Pokemon TCG boosters · MEGA &amp; Scarlet/Violet Eras · 32 sets."/>
+  <title>Japanese TCG — Pokémon &amp; One Piece Boosters</title>
+  <meta name="description" content="Buy/sell pricing and inventory tracker for Japanese TCG boosters · Pokémon (MEGA &amp; Scarlet/Violet) and One Piece (mainline + extra boosters)."/>
   <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
 
   <!-- Open Graph / social link previews -->
   <meta property="og:type" content="website"/>
-  <meta property="og:title" content="Japanese Pokemon TCG — Booster Pricing Tracker"/>
-  <meta property="og:description" content="Buy/sell pricing and inventory tracker for Japanese Pokemon TCG boosters · MEGA &amp; Scarlet/Violet Eras · 32 sets."/>
+  <meta property="og:title" content="Japanese TCG — Booster Pricing Tracker"/>
+  <meta property="og:description" content="Buy/sell pricing and inventory tracker for Japanese TCG boosters · Pokémon (MEGA &amp; Scarlet/Violet) and One Piece (mainline + extra boosters)."/>
   <meta property="og:image" content="__SITE_URL__/og-image.jpg"/>
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
   <meta property="og:url" content="__SITE_URL__/"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="Japanese Pokemon TCG — Booster Pricing Tracker"/>
-  <meta name="twitter:description" content="Buy/sell pricing and inventory tracker for Japanese Pokemon TCG boosters · MEGA &amp; Scarlet/Violet Eras."/>
+  <meta name="twitter:title" content="Japanese TCG — Booster Pricing Tracker"/>
+  <meta name="twitter:description" content="Buy/sell pricing and inventory tracker for Japanese TCG boosters · Pokémon and One Piece."/>
   <meta name="twitter:image" content="__SITE_URL__/og-image.jpg"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap');
@@ -181,6 +181,10 @@
     .era-mega::before{ background:linear-gradient(180deg, var(--neon-purple), var(--neon-pink)); box-shadow:0 0 20px var(--neon-pink); }
     .era-sv{ color:var(--neon-cyan); text-shadow:0 0 20px rgba(0,240,255,.5); }
     .era-sv::before{ background:linear-gradient(180deg, var(--neon-cyan), var(--neon-orange)); box-shadow:0 0 20px var(--neon-cyan); }
+    .era-op{ color:var(--neon-orange); text-shadow:0 0 20px rgba(255,122,61,.5); }
+    .era-op::before{ background:linear-gradient(180deg, var(--neon-orange), var(--neon-yellow)); box-shadow:0 0 20px var(--neon-orange); }
+    .era-op-eb{ color:var(--neon-yellow); text-shadow:0 0 20px rgba(255,210,63,.45); }
+    .era-op-eb::before{ background:linear-gradient(180deg, var(--neon-yellow), var(--neon-orange)); box-shadow:0 0 20px var(--neon-yellow); }
     .pokeball{
       display:inline-block;
       width:22px;height:22px;
@@ -200,6 +204,152 @@
       background:var(--bg-deep);
       border-radius:50%;
       border:1.5px solid currentColor;
+    }
+    /* Straw-hat marker for One Piece era headers */
+    .strawhat{
+      display:inline-block;
+      position:relative;
+      width:26px;height:22px;
+      flex-shrink:0;
+      filter:drop-shadow(0 0 10px currentColor);
+    }
+    .strawhat::before{
+      content:'';
+      position:absolute;
+      left:0;right:0;bottom:0;
+      height:6px;
+      background:linear-gradient(180deg, rgba(255,210,63,.95), rgba(255,122,61,.95));
+      border-radius:50%/100% 100% 40% 40%;
+      box-shadow:inset 0 -1px 0 rgba(0,0,0,.25);
+    }
+    .strawhat::after{
+      content:'';
+      position:absolute;
+      left:50%;
+      top:0;
+      transform:translateX(-50%);
+      width:14px;height:14px;
+      background:linear-gradient(180deg, rgba(255,210,63,.95), rgba(255,122,61,.95));
+      border-radius:50% 50% 30% 30% / 60% 60% 40% 40%;
+      box-shadow:
+        inset 0 -2px 0 rgba(0,0,0,.2),
+        0 6px 0 -3px rgba(255,43,214,.0);
+    }
+    /* Red ribbon band on the hat */
+    .strawhat i{
+      position:absolute;
+      left:50%;
+      top:9px;
+      transform:translateX(-50%);
+      width:14px;height:3px;
+      background:linear-gradient(90deg, #e63232, #ff2bd6);
+      border-radius:2px;
+      box-shadow:0 0 6px rgba(255,43,214,.6);
+    }
+
+    /* TCG tabs */
+    .tcg-tabs{
+      display:inline-flex;
+      gap:6px;
+      margin-top:18px;
+      padding:5px;
+      border-radius:999px;
+      background:rgba(14,14,28,.8);
+      border:1px solid var(--border);
+      backdrop-filter:blur(6px);
+    }
+    .tcg-tab{
+      appearance:none;
+      background:transparent;
+      color:var(--text-dim);
+      border:none;
+      padding:8px 18px;
+      border-radius:999px;
+      font-family:'Bricolage Grotesque',system-ui,sans-serif;
+      font-size:.78rem;
+      font-weight:700;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      cursor:pointer;
+      transition:color .2s, background .2s, box-shadow .2s, transform .15s;
+    }
+    .tcg-tab:hover{ color:var(--text); }
+    .tcg-tab:focus-visible{
+      outline:2px solid var(--neon-cyan);
+      outline-offset:2px;
+    }
+    .tcg-tab.is-active{
+      color:#05050d;
+      background:linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+      box-shadow:0 0 18px rgba(0,240,255,.35);
+    }
+    .tcg-tab[data-tcg="onepiece"].is-active{
+      background:linear-gradient(135deg, var(--neon-orange), var(--neon-yellow));
+      box-shadow:0 0 18px rgba(255,122,61,.45);
+    }
+    .tcg-tab[data-tcg="pokemon"].is-active{
+      background:linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      box-shadow:0 0 18px rgba(255,43,214,.4);
+    }
+
+    /* Modern, non-boxed search field — sits on its own row beneath the tabs */
+    .search-row{
+      margin-top:22px;
+      display:flex;
+      justify-content:center;
+    }
+    .search-field{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      width:100%;
+      max-width:480px;
+      padding:8px 4px 12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      transition:border-color .25s;
+    }
+    .search-field::after{
+      content:'';
+      position:absolute;
+      left:0;right:0;bottom:-1px;
+      height:2px;
+      background:linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-orange));
+      transform:scaleX(0);
+      transform-origin:center;
+      transition:transform .35s cubic-bezier(.2,.7,.3,1);
+      border-radius:2px;
+    }
+    .search-field:focus-within::after{ transform:scaleX(1); }
+    .search-field:focus-within{ border-bottom-color:transparent; }
+    .search-icon{
+      width:18px;height:18px;
+      color:var(--text-mute);
+      flex-shrink:0;
+      transition:color .25s, transform .3s cubic-bezier(.2,.7,.3,1);
+    }
+    .search-field:focus-within .search-icon{
+      color:var(--neon-cyan);
+      transform:scale(1.08);
+    }
+    #search-box{
+      flex:1;
+      min-width:0;
+      appearance:none;
+      background:transparent;
+      border:none;
+      outline:none;
+      color:var(--text);
+      font-family:inherit;
+      font-size:1.05rem;
+      font-weight:400;
+      letter-spacing:.01em;
+      padding:4px 0;
+    }
+    #search-box::placeholder{
+      color:var(--text-mute);
+      font-weight:300;
+      letter-spacing:.04em;
     }
 
     /* Card grid */
@@ -249,6 +399,7 @@
     .card:hover::before{ opacity:1; }
     .card.mega{ --card-accent: var(--neon-pink); }
     .card.sv  { --card-accent: var(--neon-cyan); }
+    .card.op  { --card-accent: var(--neon-orange); }
 
     .card-media{
       position:relative;
@@ -262,6 +413,7 @@
       min-height:180px;
     }
     .card.sv .card-media{ background:radial-gradient(ellipse at center bottom, rgba(0,240,255,.07), transparent 70%); }
+    .card.op .card-media{ background:radial-gradient(ellipse at center bottom, rgba(255,122,61,.10), transparent 70%); }
 
     .booster-img{
       width:220px;
@@ -274,6 +426,7 @@
       animation: floatY 5s ease-in-out infinite;
     }
     .card.sv .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(0,240,255,.18)); }
+    .card.op .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(255,122,61,.22)); }
     .card:hover .booster-img{ transform:translateY(-4px) scale(1.04) rotate(-1deg); }
     @keyframes floatY{
       0%,100% { transform:translateY(0); }
@@ -334,6 +487,11 @@
       background:rgba(0,240,255,.1);
       color:var(--neon-cyan);
       border-color:rgba(0,240,255,.25);
+    }
+    .card.op .set-code{
+      background:rgba(255,122,61,.12);
+      color:var(--neon-orange);
+      border-color:rgba(255,122,61,.3);
     }
 
     .card-inputs{
@@ -405,6 +563,8 @@
       header{ padding:32px 20px; }
       header h1{ font-size:1.6rem; }
       .card-grid{ grid-template-columns: 1fr; }
+      .tcg-tabs{ flex-wrap:wrap; justify-content:center; }
+      .tcg-tab{ padding:7px 14px; font-size:.72rem; }
     }
 
     @media print{
@@ -461,17 +621,42 @@
       img.src = sources[idx];
     }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      await loadPrices();
-      
-      
-      document.getElementById('search-box')?.addEventListener('input', e => {
-        const term = e.target.value.toLowerCase();
-        document.querySelectorAll('.card').forEach(card => {
+    let activeTcg = 'all';
+
+    function applyFilters() {
+      const term = (document.getElementById('search-box')?.value || '').toLowerCase();
+      document.querySelectorAll('.era-section').forEach(section => {
+        const sectionTcg = section.dataset.tcg;
+        const tcgMatch = activeTcg === 'all' || sectionTcg === activeTcg;
+        section.style.display = tcgMatch ? '' : 'none';
+        if (!tcgMatch) return;
+        section.querySelectorAll('.card').forEach(card => {
           card.style.display = card.textContent.toLowerCase().includes(term) ? 'flex' : 'none';
         });
       });
-  
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadPrices();
+
+      document.getElementById('search-box')?.addEventListener('input', applyFilters);
+
+      document.querySelectorAll('.tcg-tab').forEach(tab => {
+        const activate = () => {
+          activeTcg = tab.dataset.tcg;
+          document.querySelectorAll('.tcg-tab').forEach(t => {
+            const isActive = t === tab;
+            t.classList.toggle('is-active', isActive);
+            t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+          applyFilters();
+        };
+        tab.addEventListener('click', activate);
+        tab.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+        });
+      });
+
       // Parallax: subtle tilt on cards based on mouse position within
       document.querySelectorAll('.card').forEach(card => {
         card.addEventListener('mousemove', e => {
@@ -487,15 +672,28 @@
 </head>
 <body>
 <header>
-  <h1>JAPANESE POKEMON TCG</h1>
+  <h1>JAPANESE TCG</h1>
   <a href="admin.html" style="position:absolute; top:20px; right:20px; color:var(--text-dim); text-decoration:none; font-size:0.8rem;">Admin</a>
-  <p>MEGA Era &amp; Scarlet &amp; Violet Era &nbsp;·&nbsp; January 2023 — May 2026 &nbsp;·&nbsp; 32 sets &nbsp;·&nbsp; Newest first</p>
+  <p>Pokémon &nbsp;·&nbsp; One Piece &nbsp;·&nbsp; Japanese boosters</p>
   <div id="sync-status"></div>
-  <input type="text" id="search-box" placeholder="Search boosters..." style="margin-top:16px; padding:10px 16px; width:100%; max-width:400px; border-radius:8px; border:1px solid var(--border); background:var(--bg-card); color:var(--text); font-family:inherit; font-size:1rem;" />
+  <div class="tcg-tabs" role="tablist" aria-label="Trading card game">
+    <button class="tcg-tab is-active" data-tcg="all" role="tab" aria-selected="true" type="button">All</button>
+    <button class="tcg-tab" data-tcg="pokemon" role="tab" aria-selected="false" type="button">Pokémon</button>
+    <button class="tcg-tab" data-tcg="onepiece" role="tab" aria-selected="false" type="button">One Piece</button>
+  </div>
+  <div class="search-row">
+    <label class="search-field">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M20 20 L16.5 16.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <input type="text" id="search-box" placeholder="Search boosters" autocomplete="off" />
+    </label>
+  </div>
 </header>
 
-<section class="era-section">
-  <div class="era-header era-mega"><span class="pokeball"></span>MEGA Era · 2025 — 2026</div>
+<section class="era-section" data-tcg="pokemon">
+  <div class="era-header era-mega"><span class="pokeball"></span>Pokémon · MEGA Era · 2025 — 2026</div>
   <div class="card-grid">
 
     <article class="card mega">
@@ -619,8 +817,8 @@
   </div>
 </section>
 
-<section class="era-section">
-  <div class="era-header era-sv"><span class="pokeball"></span>Scarlet &amp; Violet Era · 2023 — 2025</div>
+<section class="era-section" data-tcg="pokemon">
+  <div class="era-header era-sv"><span class="pokeball"></span>Pokémon · Scarlet &amp; Violet Era · 2023 — 2025</div>
   <div class="card-grid">
 
     <article class="card sv">
@@ -1026,8 +1224,344 @@
   </div>
 </section>
 
+<section class="era-section" data-tcg="onepiece">
+  <div class="era-header era-op"><span class="strawhat"><i></i></span>One Piece · Mainline Boosters · 2022 — 2026</div>
+  <div class="card-grid">
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Adventure on KAMI's Island" src="boosters/OP15-adventure-on-kamis-island.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Adventure on KAMI's Island</div>
+        <div class="set-name-jp">KAMIの島の冒険</div>
+        <div class="set-meta"><span class="set-code">OP15</span><span>March 2026</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP15-adventure-on-kamis-island-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP15-adventure-on-kamis-island-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="The Azure Sea's Seven" src="boosters/OP14-azure-seas-seven.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">The Azure Sea's Seven</div>
+        <div class="set-name-jp">蒼海の七人</div>
+        <div class="set-meta"><span class="set-code">OP14</span><span>December 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP14-azure-seas-seven-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP14-azure-seas-seven-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Inherited Will" src="boosters/OP13-inherited-will.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Inherited Will</div>
+        <div class="set-name-jp">継承される意志</div>
+        <div class="set-meta"><span class="set-code">OP13</span><span>September 13, 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP13-inherited-will-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP13-inherited-will-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Bonds of Master and Disciple" src="boosters/OP12-bonds-of-master-disciple.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Bonds of Master and Disciple</div>
+        <div class="set-name-jp">師弟の絆</div>
+        <div class="set-meta"><span class="set-code">OP12</span><span>June 28, 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP12-bonds-of-master-disciple-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP12-bonds-of-master-disciple-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="A Fist of Divine Speed" src="boosters/OP11-fist-divine-speed.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">A Fist of Divine Speed</div>
+        <div class="set-name-jp">超新星</div>
+        <div class="set-meta"><span class="set-code">OP11</span><span>March 8, 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP11-fist-divine-speed-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP11-fist-divine-speed-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Royal Bloodline" src="boosters/OP10-royal-bloodline.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Royal Bloodline</div>
+        <div class="set-name-jp">王族の血脈</div>
+        <div class="set-meta"><span class="set-code">OP10</span><span>December 13, 2024</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP10-royal-bloodline-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP10-royal-bloodline-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="The Four Emperors" src="boosters/OP09-four-emperors.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">The Four Emperors</div>
+        <div class="set-name-jp">新たなる皇帝</div>
+        <div class="set-meta"><span class="set-code">OP09</span><span>September 13, 2024</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP09-four-emperors-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP09-four-emperors-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Two Legends" src="boosters/OP08-two-legends.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Two Legends</div>
+        <div class="set-name-jp">二つの伝説</div>
+        <div class="set-meta"><span class="set-code">OP08</span><span>June 28, 2024</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP08-two-legends-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP08-two-legends-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="500 Years Into the Future" src="boosters/OP07-500-years-future.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">500 Years Into the Future</div>
+        <div class="set-name-jp">500年後の未来</div>
+        <div class="set-meta"><span class="set-code">OP07</span><span>March 30, 2024</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP07-500-years-future-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP07-500-years-future-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Flanked by Legends" src="boosters/OP06-flanked-by-legends.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Flanked by Legends</div>
+        <div class="set-name-jp">双璧の覇者</div>
+        <div class="set-meta"><span class="set-code">OP06</span><span>December 9, 2023</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP06-flanked-by-legends-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP06-flanked-by-legends-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Protagonist of the New Era" src="boosters/OP05-protagonist-new-era.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Protagonist of the New Era</div>
+        <div class="set-name-jp">新時代の主役</div>
+        <div class="set-meta"><span class="set-code">OP05</span><span>September 30, 2023</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP05-protagonist-new-era-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP05-protagonist-new-era-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Kingdom of Conspiracies" src="boosters/OP04-kingdom-of-conspiracies.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Kingdom of Conspiracies</div>
+        <div class="set-name-jp">謀略の王国</div>
+        <div class="set-meta"><span class="set-code">OP04</span><span>June 10, 2023</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP04-kingdom-of-conspiracies-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP04-kingdom-of-conspiracies-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Mighty Enemies" src="boosters/OP03-mighty-enemies.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Mighty Enemies</div>
+        <div class="set-name-jp">強大な敵</div>
+        <div class="set-meta"><span class="set-code">OP03</span><span>March 25, 2023</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP03-mighty-enemies-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP03-mighty-enemies-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Paramount War" src="boosters/OP02-paramount-war.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Paramount War</div>
+        <div class="set-name-jp">頂上決戦</div>
+        <div class="set-meta"><span class="set-code">OP02</span><span>December 17, 2022</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP02-paramount-war-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP02-paramount-war-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Romance Dawn" src="boosters/OP01-romance-dawn.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Romance Dawn</div>
+        <div class="set-name-jp">ロマンスドーン</div>
+        <div class="set-meta"><span class="set-code">OP01</span><span>July 8, 2022</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP01-romance-dawn-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP01-romance-dawn-stock">0</div></div></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="era-section" data-tcg="onepiece">
+  <div class="era-header era-op-eb"><span class="strawhat"><i></i></span>One Piece · Extra Boosters</div>
+  <div class="card-grid">
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Egghead Crisis" src="boosters/EB04-egghead-crisis.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Egghead Crisis</div>
+        <div class="set-name-jp">エッグヘッドの危機</div>
+        <div class="set-meta"><span class="set-code">EB04</span><span>2026</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="EB04-egghead-crisis-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="EB04-egghead-crisis-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Heroines Edition" src="boosters/EB03-heroines-edition.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Heroines Edition</div>
+        <div class="set-name-jp">ヒロインズエディション</div>
+        <div class="set-meta"><span class="set-code">EB03</span><span>October 25, 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="EB03-heroines-edition-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="EB03-heroines-edition-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Anime 25th Collection" src="boosters/EB02-anime-25th.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Anime 25th Collection</div>
+        <div class="set-name-jp">25周年プレミアムコレクション</div>
+        <div class="set-meta"><span class="set-code">EB02</span><span>July 12, 2024</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="EB02-anime-25th-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="EB02-anime-25th-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="Memorial Collection" src="boosters/EB01-memorial-collection.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Memorial Collection</div>
+        <div class="set-name-jp">メモリアルコレクション</div>
+        <div class="set-meta"><span class="set-code">EB01</span><span>July 15, 2023</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="EB01-memorial-collection-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="EB01-memorial-collection-stock">0</div></div></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="era-section" data-tcg="onepiece">
+  <div class="era-header era-op-eb"><span class="strawhat"><i></i></span>One Piece · Premium Boosters</div>
+  <div class="card-grid">
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="One Piece The Best (PRB-02)" src="boosters/PRB02-the-best.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">One Piece The Best (PRB-02)</div>
+        <div class="set-name-jp">ザ ベスト</div>
+        <div class="set-meta"><span class="set-code">PRB02</span><span>2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="PRB02-the-best-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="PRB02-the-best-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img" alt="One Piece The Best (PRB-01)" src="boosters/PRB01-the-best.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">One Piece The Best (PRB-01)</div>
+        <div class="set-name-jp">ザ ベスト</div>
+        <div class="set-meta"><span class="set-code">PRB01</span><span>2024</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="PRB01-the-best-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="PRB01-the-best-stock">0</div></div></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
 <p class="note">
-  Booster pack images from <a href="https://www.artofpkm.com">artofpkm.com</a> &nbsp;·&nbsp; Set logos from <a href="https://www.serebii.net">Serebii</a> &nbsp;·&nbsp; Prices stored in <a href="https://supabase.com">Supabase</a><br>
+  Pokémon booster pack images from <a href="https://www.artofpkm.com">artofpkm.com</a> &nbsp;·&nbsp; One Piece images &amp; logos from <a href="https://tcgdex.net">tcgdex</a> &nbsp;·&nbsp; Set logos from <a href="https://www.serebii.net">Serebii</a> &nbsp;·&nbsp; Prices stored in <a href="https://supabase.com">Supabase</a><br>
   <strong>Save as PDF:</strong> Chrome → File → Print → Save as PDF (enable "Background graphics")
 </p>
 </body>
