@@ -15,7 +15,7 @@ index.html              The entire app — HTML, scoped <style>, inline <script>
 build.mjs               Substitutes __PLACEHOLDER__ tokens before deploy.
 vercel.json             Vercel build config (primary deploy).
 .github/workflows/      GitHub Pages workflow (backup deploy).
-boosters/               32 PNGs, one per booster set. Filename = data-key prefix.
+boosters/               One PNG per booster set. Filename = data-key prefix.
 og-image.jpg            1200×630 social link preview.
 favicon.svg             Pokeball SVG.
 ```
@@ -52,17 +52,44 @@ Each set's booster pack PNG lives at `boosters/{set-code}-{slug}.png` and is ref
 
 ## Common tasks
 
+### Download booster art from Japan2UK
+
+Pack art is **always** taken from the Japan2UK **booster pack** product (not the box, not Korean listings). The shop watermarks the left/right margins; the shared `.booster-img` CSS mask crops those away. Do not source pack art from Serebii, TCGdex, or a random Google image.
+
+1. Find the pack product. Handle pattern is `pokemon-{slug}-{setcode}-japanese-booster-pack` (High Class sets often include `high-class` in the handle). Examples:
+   - `https://www.japan2uk.com/products/pokemon-storm-emeralda-m6-japanese-booster-pack`
+   - `https://www.japan2uk.com/products/pokemon-vstar-universe-s12a-high-class-japanese-booster-pack`
+   If the handle is unknown, search the store (`site:japan2uk.com {set name} Japanese Booster Pack`) or browse the relevant collection. Prefer the **Japanese Booster Pack** URL, never the box or a regional reprint.
+2. Pull the Shopify product JSON (append `.js` to the product URL). This is more reliable than scraping HTML:
+
+   ```bash
+   curl -sL 'https://www.japan2uk.com/products/<handle>.js'
+   ```
+
+   Use `featured_image` or the first entry in `images` / `media`. Shopify CDN paths may be protocol-relative (`//cdn.shopify.com/...`); prefix `https:`.
+3. Download the PNG at native size (Japan2UK pack shots are typically 1400×1400 RGBA).
+4. Resize to **512×512** to match every file in `boosters/` (macOS: `sips -Z 512 src.png --out boosters/{SETCODE}-{slug}.png`). Target size is ~300–400 KB.
+5. Filename must be `{SETCODE}-{slug}.png` where `{SETCODE}-{slug}` is the same prefix used in `data-key`s (e.g. `S12a-vstar-universe.png` ↔ `S12a-vstar-universe-sell`). Overwrite in place when replacing art so the HTML `src` does not change.
+6. Leave the global watermark mask in place. Do not strip the watermark from the PNG.
+
+If the pack product has no image yet (pre-reveal), wait — do not substitute box art or fan renders.
+
 ### Add a new booster set
 
-1. Download a clean (or watermarked-by-japan2uk) booster image to `boosters/{SETCODE}-{slug}.png`.
-2. Duplicate an existing `<article class="card sv">` (or `mega`) block in `index.html`. Place it in the correct chronological position — newest first within each era.
-3. Update: `alt`, `src` (booster + logo), `set-name`, `set-name-jp`, `set-code`, release date, and all three `data-key`s on the inputs.
-4. No DB migration needed — new rows materialize the first time someone types in an input.
+Do this on **both** `index.html` (public: sell + stock displays) and `admin.html` (buy + sell + stock inputs). Missing the admin card is a recurring bug: the public page shows the set but stock cannot be edited.
+
+1. Grab pack art from Japan2UK as above into `boosters/{SETCODE}-{slug}.png`.
+2. Duplicate an existing `<article class="card …">` in the matching TCG/era section. Card class is the era: `mega`, `sv`, `swsh`, or `op`. Place it in chronological order — **newest first** within that era. If the era section does not exist yet, copy a whole `<section class="era-section">` and add matching CSS (`.era-*` header + `.card.*` accent) to **both** HTML files.
+3. Update: booster `alt`/`src`, logo `alt`/`src` + `tryNext()` fallback, `set-name`, `set-name-jp`, `set-code`, release date, and every `data-key`.
+4. Set codes: keep this site's existing prefixes even when shops disagree (this repo already uses `MG6` for Abyss Eye while Japan2UK lists it as m5). Never reuse a prefix already in `data-key`s. Look up the Serebii card-list slug from `www.serebii.net/card/{slug}/` for the logo URL `https://www.serebii.net/card/logo/{slug}.png`.
+5. Keep public and admin markup in sync except for the input row: public uses `.price-display`; admin uses `.price-input` (Buy ¥, Sell €, Stock).
+6. No DB migration needed — new rows materialize the first time someone types in an admin input.
 
 ### Replace a booster image
 
-1. Drop the new file at `boosters/{SETCODE}-{slug}.png` (keep the filename so the HTML stays in sync).
-2. If the new image has no watermark, you can either leave the mask (it still works, just crops more margin than necessary) or remove the `mask-image` rule for that specific image via a class modifier.
+1. Re-download from Japan2UK using the pack-product steps above.
+2. Overwrite `boosters/{SETCODE}-{slug}.png` (keep the filename so the HTML stays in sync). Resize to 512×512.
+3. If the new image has no watermark, you can either leave the mask (it still works, just crops more margin than necessary) or remove the `mask-image` rule for that specific image via a class modifier.
 
 ### Change theme colors
 
@@ -113,4 +140,6 @@ Use this account only for local/preview verification, never for production data.
 - Don't rename `data-key`s without a Supabase migration — they're database primary keys.
 - Don't introduce build tooling (Vite, webpack, etc.) — the single-file architecture is deliberate.
 - Don't introduce frameworks. This stays plain HTML/CSS/JS.
-- Don't remove the JAPAN2UK watermark mask without also replacing all 32 booster images.
+- Don't remove the JAPAN2UK watermark mask without also replacing every booster image (or confirming none are watermarked).
+- Don't add a set to `index.html` without the matching admin card (buy/sell/stock) in `admin.html`.
+- Don't use Japan2UK box art, Korean listings, or non-pack product photos as the booster image.

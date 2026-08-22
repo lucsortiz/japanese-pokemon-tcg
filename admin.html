@@ -181,6 +181,8 @@
     .era-mega::before{ background:linear-gradient(180deg, var(--neon-purple), var(--neon-pink)); box-shadow:0 0 20px var(--neon-pink); }
     .era-sv{ color:var(--neon-cyan); text-shadow:0 0 20px rgba(0,240,255,.5); }
     .era-sv::before{ background:linear-gradient(180deg, var(--neon-cyan), var(--neon-orange)); box-shadow:0 0 20px var(--neon-cyan); }
+    .era-swsh{ color:var(--neon-yellow); text-shadow:0 0 20px rgba(255,210,63,.5); }
+    .era-swsh::before{ background:linear-gradient(180deg, var(--neon-yellow), var(--neon-purple)); box-shadow:0 0 20px var(--neon-yellow); }
     .era-op{ color:var(--neon-orange); text-shadow:0 0 20px rgba(255,122,61,.5); }
     .era-op::before{ background:linear-gradient(180deg, var(--neon-orange), var(--neon-yellow)); box-shadow:0 0 20px var(--neon-orange); }
     .era-op-eb{ color:var(--neon-yellow); text-shadow:0 0 20px rgba(255,210,63,.45); }
@@ -398,6 +400,7 @@
     .card:hover::before{ opacity:1; }
     .card.mega{ --card-accent: var(--neon-pink); }
     .card.sv  { --card-accent: var(--neon-cyan); }
+    .card.swsh{ --card-accent: var(--neon-yellow); }
     .card.op  { --card-accent: var(--neon-orange); }
 
     .card-media{
@@ -412,6 +415,7 @@
       min-height:180px;
     }
     .card.sv .card-media{ background:radial-gradient(ellipse at center bottom, rgba(0,240,255,.07), transparent 70%); }
+    .card.swsh .card-media{ background:radial-gradient(ellipse at center bottom, rgba(255,210,63,.07), transparent 70%); }
     .card.op .card-media{ background:radial-gradient(ellipse at center bottom, rgba(255,122,61,.10), transparent 70%); }
 
     .booster-img{
@@ -425,6 +429,7 @@
       animation: floatY 5s ease-in-out infinite;
     }
     .card.sv .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(0,240,255,.18)); }
+    .card.swsh .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(255,210,63,.18)); }
     .card.op .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(255,122,61,.22)); }
     .card:hover .booster-img{ transform:translateY(-4px) scale(1.04) rotate(-1deg); }
     @keyframes floatY{
@@ -1315,6 +1320,30 @@
         <div class="input-group"><span class="input-label">Buy</span><div style="display:flex; align-items:center;"><input class="price-input" type="number" min="0" step="1" data-key="SV1S-scarlet-ex-buy"/> <span class="sym" style="margin-left: 4px; font-size: 0.9rem;">¥</span></div></div>
         <div class="input-group"><span class="input-label">Sell</span><div style="display:flex; align-items:center;"><input class="price-input" type="number" min="0" step="0.01" data-key="SV1S-scarlet-ex-sell"/> <span class="sym" style="margin-left: 4px; font-size: 0.9rem;">€</span></div></div>
         <div class="input-group"><span class="input-label">Stock</span><input class="price-input" type="number" min="0" step="1" data-key="SV1S-scarlet-ex-stock"/></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="era-section" data-tcg="pokemon">
+  <div class="era-header era-swsh"><span class="pokeball"></span>Pokémon · Sword &amp; Shield Era · 2019 — 2022</div>
+  <div class="card-grid">
+
+    <article class="card swsh">
+      <div class="card-media">
+        <img class="booster-img" alt="VSTAR Universe" src="boosters/S12a-vstar-universe.png">
+        <img class="set-logo" alt="VSTAR Universe logo" src="https://www.serebii.net/card/logo/vstaruniverse.png" onerror="tryNext(this,['https://assets.tcgdex.net/jp/swsh/s12a/logo.webp'],0)">
+      </div>
+      <div class="card-info">
+        <div class="set-name">VSTAR Universe</div>
+        <div class="set-name-jp">VSTARユニバース</div>
+        <div class="set-meta"><span class="set-code">S12a</span><span>December 2, 2022</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Buy</span><div style="display:flex; align-items:center;"><input class="price-input" type="number" min="0" step="1" data-key="S12a-vstar-universe-buy"/> <span class="sym" style="margin-left: 4px; font-size: 0.9rem;">¥</span></div></div>
+        <div class="input-group"><span class="input-label">Sell</span><div style="display:flex; align-items:center;"><input class="price-input" type="number" min="0" step="0.01" data-key="S12a-vstar-universe-sell"/> <span class="sym" style="margin-left: 4px; font-size: 0.9rem;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><input class="price-input" type="number" min="0" step="1" data-key="S12a-vstar-universe-stock"/></div>
       </div>
     </article>
 
