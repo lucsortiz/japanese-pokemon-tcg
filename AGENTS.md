@@ -72,7 +72,7 @@ Pack art is **always** taken from the Japan2UK **booster pack** product (not the
 5. Filename must be `{SETCODE}-{slug}.png` where `{SETCODE}-{slug}` is the same prefix used in `data-key`s (e.g. `S12a-vstar-universe.png` ↔ `S12a-vstar-universe-sell`). Overwrite in place when replacing art so the HTML `src` does not change.
 6. Leave the global watermark mask in place. Do not strip the watermark from the PNG.
 
-If the pack product has no image yet (pre-reveal), wait — do not substitute box art or fan renders.
+If the pack product has no image yet (pre-reveal), wait — do not substitute box art or fan renders. Exception: if the user supplies an official Japanese pack-product URL from another shop (e.g. japan-figure.com), download that shot, convert to 512×512 PNG, and add `class="booster-img no-watermark"` so the Japan2UK side-crop mask is not applied. Replace with Japan2UK art later if it appears.
 
 ### Add a new booster set
 

@@ -432,6 +432,10 @@
     .card.sv .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(0,240,255,.18)); }
     .card.swsh .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(255,210,63,.18)); }
     .card.op .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(255,122,61,.22)); }
+    .booster-img.no-watermark{
+      -webkit-mask-image:none;
+              mask-image:none;
+    }
     .card:hover .booster-img{ transform:translateY(-4px) scale(1.04) rotate(-1deg); }
     @keyframes floatY{
       0%,100% { transform:translateY(0); }
@@ -1309,6 +1313,21 @@
 <section class="era-section" data-tcg="onepiece">
   <div class="era-header era-op"><span class="strawhat"><i></i></span>One Piece · Mainline Boosters · 2022 — 2026</div>
   <div class="card-grid">
+
+    <article class="card op">
+      <div class="card-media">
+        <img class="booster-img no-watermark" alt="The World's Strongest Warriors" src="boosters/OP17-worlds-strongest-warriors.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">The World's Strongest Warriors</div>
+        <div class="set-name-jp">世界最強の戦士</div>
+        <div class="set-meta"><span class="set-code">OP17</span><span>August 22, 2026</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP17-worlds-strongest-warriors-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="OP17-worlds-strongest-warriors-stock">0</div></div></div>
+      </div>
+    </article>
 
     <article class="card op">
       <div class="card-media">
