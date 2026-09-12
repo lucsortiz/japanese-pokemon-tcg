@@ -553,6 +553,45 @@
       background:rgba(0,0,0,.6);
       box-shadow:0 0 0 3px color-mix(in srgb, var(--card-accent, var(--neon-cyan)) 18%, transparent), 0 0 14px -2px var(--card-accent, var(--neon-cyan));
     }
+    .stock-stepper{
+      display:flex;
+      align-items:stretch;
+      gap:4px;
+    }
+    .stock-stepper .price-input{
+      flex:1;
+      min-width:0;
+      padding-left:6px;
+      padding-right:6px;
+      text-align:center;
+    }
+    .stock-btn{
+      flex:0 0 1.75rem;
+      width:1.75rem;
+      padding:0;
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:rgba(0,0,0,.4);
+      color:var(--text);
+      font-family:'Bricolage Grotesque','Inter',sans-serif;
+      font-size:1.05rem;
+      font-weight:700;
+      line-height:1;
+      cursor:pointer;
+      transition:border-color .2s, background .2s, color .2s, box-shadow .2s;
+    }
+    .stock-btn:hover{
+      border-color:rgba(255,255,255,.15);
+      color:var(--card-accent, var(--neon-cyan));
+    }
+    .stock-btn:focus-visible{
+      outline:none;
+      border-color:var(--card-accent, var(--neon-cyan));
+      box-shadow:0 0 0 3px color-mix(in srgb, var(--card-accent, var(--neon-cyan)) 18%, transparent);
+    }
+    .stock-btn:active{
+      background:rgba(0,0,0,.7);
+    }
 
     .note{
       position:relative;
@@ -596,6 +635,7 @@
       .card{ background:white; border:1px solid #ddd; box-shadow:none; break-inside:avoid; }
       .set-name,.set-name-jp{ color:#1a1a2e; }
       .price-input{ background:transparent; color:#1a1a2e; border:none; }
+      .stock-btn{ display:none; }
     }
   </style>
   <script>
@@ -660,6 +700,39 @@
       saveTimers[key] = setTimeout(() => upsertPrice(key, value), 800);
     }
 
+    function bumpStock(inp, delta) {
+      const current = Math.max(0, parseInt(inp.value, 10) || 0);
+      const next = Math.max(0, current + delta);
+      if (next === current) return;
+      inp.value = next;
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    function enhanceStockInputs() {
+      document.querySelectorAll('.price-input[data-key$="-stock"]').forEach(inp => {
+        if (inp.closest('.stock-stepper')) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'stock-stepper';
+        inp.parentNode.insertBefore(wrap, inp);
+
+        const minus = document.createElement('button');
+        minus.type = 'button';
+        minus.className = 'stock-btn';
+        minus.setAttribute('aria-label', 'Decrease stock by 1');
+        minus.textContent = '−';
+
+        const plus = document.createElement('button');
+        plus.type = 'button';
+        plus.className = 'stock-btn';
+        plus.setAttribute('aria-label', 'Increase stock by 1');
+        plus.textContent = '+';
+
+        wrap.append(minus, inp, plus);
+        minus.addEventListener('click', () => bumpStock(inp, -1));
+        plus.addEventListener('click', () => bumpStock(inp, 1));
+      });
+    }
+
     function tryNext(img, sources, idx) {
       if (idx >= sources.length) { img.style.opacity = '0.15'; return; }
       img.onerror = function() { tryNext(img, sources, idx + 1); };
@@ -682,6 +755,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
+      enhanceStockInputs();
       await loadPrices();
       document.querySelectorAll('.price-input').forEach(inp => {
         inp.addEventListener('input', () => scheduleUpsert(inp.dataset.key, inp.value));
