@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Japanese TCG — Pokémon &amp; One Piece Boosters</title>
-  <meta name="description" content="Buy/sell pricing and inventory tracker for Japanese TCG boosters · Pokémon (MEGA &amp; Scarlet/Violet) and One Piece (mainline + extra boosters)."/>
+  <title>Japanese TCG — Pokémon, One Piece &amp; Dragon Ball Boosters</title>
+  <meta name="description" content="Buy/sell pricing and inventory tracker for Japanese TCG boosters · Pokémon, One Piece, and Dragon Ball Fusion World."/>
   <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
 
   <!-- Open Graph / social link previews -->
   <meta property="og:type" content="website"/>
   <meta property="og:title" content="Japanese TCG — Booster Pricing Tracker"/>
-  <meta property="og:description" content="Buy/sell pricing and inventory tracker for Japanese TCG boosters · Pokémon (MEGA &amp; Scarlet/Violet) and One Piece (mainline + extra boosters)."/>
+  <meta property="og:description" content="Buy/sell pricing and inventory tracker for Japanese TCG boosters · Pokémon, One Piece, and Dragon Ball Fusion World."/>
   <meta property="og:image" content="__SITE_URL__/og-image.jpg"/>
   <meta property="og:image:width" content="1200"/>
   <meta property="og:image:height" content="630"/>
   <meta property="og:url" content="__SITE_URL__/"/>
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="Japanese TCG — Booster Pricing Tracker"/>
-  <meta name="twitter:description" content="Buy/sell pricing and inventory tracker for Japanese TCG boosters · Pokémon and One Piece."/>
+  <meta name="twitter:description" content="Buy/sell pricing and inventory tracker for Japanese TCG boosters · Pokémon, One Piece, and Dragon Ball."/>
   <meta name="twitter:image" content="__SITE_URL__/og-image.jpg"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap');
@@ -36,6 +36,7 @@
       --neon-lime:  #b6ff3c;
       --neon-yellow:#ffd23f;
       --neon-orange:#ff7a3d;
+      --neon-gold:  #ffc107;
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
@@ -187,6 +188,10 @@
     .era-op::before{ background:linear-gradient(180deg, var(--neon-orange), var(--neon-yellow)); box-shadow:0 0 20px var(--neon-orange); }
     .era-op-eb{ color:var(--neon-yellow); text-shadow:0 0 20px rgba(255,210,63,.45); }
     .era-op-eb::before{ background:linear-gradient(180deg, var(--neon-yellow), var(--neon-orange)); box-shadow:0 0 20px var(--neon-yellow); }
+    .era-db{ color:var(--neon-gold); text-shadow:0 0 20px rgba(255,193,7,.5); }
+    .era-db::before{ background:linear-gradient(180deg, #ff3b30, var(--neon-gold)); box-shadow:0 0 20px var(--neon-gold); }
+    .era-db-sp{ color:#ff8a3d; text-shadow:0 0 20px rgba(255,138,61,.45); }
+    .era-db-sp::before{ background:linear-gradient(180deg, var(--neon-gold), #ff3b30); box-shadow:0 0 20px #ff8a3d; }
     .pokeball{
       display:inline-block;
       width:22px;height:22px;
@@ -248,6 +253,26 @@
       border-radius:2px;
       box-shadow:0 0 6px rgba(255,43,214,.6);
     }
+    .dragonball{
+      display:inline-block;
+      width:22px;height:22px;
+      border-radius:50%;
+      flex-shrink:0;
+      background:radial-gradient(circle at 35% 32%, #ffe082, #ffb300 42%, #f57c00 78%);
+      box-shadow:0 0 12px currentColor, inset 0 -3px 4px rgba(120,40,0,.35);
+      position:relative;
+    }
+    .dragonball::after{
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 32% 38%, #c62828 1.3px, transparent 1.5px),
+        radial-gradient(circle at 58% 30%, #c62828 1.3px, transparent 1.5px),
+        radial-gradient(circle at 68% 58%, #c62828 1.3px, transparent 1.5px),
+        radial-gradient(circle at 40% 66%, #c62828 1.3px, transparent 1.5px);
+    }
 
     /* TCG tabs */
     .tcg-tabs{
@@ -292,6 +317,10 @@
     .tcg-tab[data-tcg="pokemon"].is-active{
       background:linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
       box-shadow:0 0 18px rgba(255,43,214,.4);
+    }
+    .tcg-tab[data-tcg="dragonball"].is-active{
+      background:linear-gradient(135deg, var(--neon-gold), #ff6a00);
+      box-shadow:0 0 18px rgba(255,193,7,.45);
     }
 
     /* Modern, non-boxed search field — sits on its own row beneath the tabs */
@@ -403,6 +432,7 @@
     .card.sv  { --card-accent: var(--neon-cyan); }
     .card.swsh{ --card-accent: var(--neon-yellow); }
     .card.op  { --card-accent: var(--neon-orange); }
+    .card.db  { --card-accent: var(--neon-gold); }
 
     .card-media{
       position:relative;
@@ -418,6 +448,7 @@
     .card.sv .card-media{ background:radial-gradient(ellipse at center bottom, rgba(0,240,255,.07), transparent 70%); }
     .card.swsh .card-media{ background:radial-gradient(ellipse at center bottom, rgba(255,210,63,.07), transparent 70%); }
     .card.op .card-media{ background:radial-gradient(ellipse at center bottom, rgba(255,122,61,.10), transparent 70%); }
+    .card.db .card-media{ background:radial-gradient(ellipse at center bottom, rgba(255,193,7,.10), transparent 70%); }
 
     .booster-img{
       width:220px;
@@ -432,6 +463,7 @@
     .card.sv .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(0,240,255,.18)); }
     .card.swsh .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(255,210,63,.18)); }
     .card.op .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(255,122,61,.22)); }
+    .card.db .booster-img{ filter:drop-shadow(0 8px 24px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(255,193,7,.22)); }
     .booster-img.no-watermark{
       -webkit-mask-image:none;
               mask-image:none;
@@ -501,6 +533,11 @@
       background:rgba(255,122,61,.12);
       color:var(--neon-orange);
       border-color:rgba(255,122,61,.3);
+    }
+    .card.db .set-code{
+      background:rgba(255,193,7,.12);
+      color:var(--neon-gold);
+      border-color:rgba(255,193,7,.35);
     }
 
     .card-inputs{
@@ -683,12 +720,13 @@
 <header>
   <h1>JAPANESE TCG</h1>
   <a href="admin.html" style="position:absolute; top:20px; right:20px; color:var(--text-dim); text-decoration:none; font-size:0.8rem;">Admin</a>
-  <p>Pokémon &nbsp;·&nbsp; One Piece &nbsp;·&nbsp; Japanese boosters</p>
+  <p>Pokémon &nbsp;·&nbsp; One Piece &nbsp;·&nbsp; Dragon Ball &nbsp;·&nbsp; Japanese boosters</p>
   <div id="sync-status"></div>
   <div class="tcg-tabs" role="tablist" aria-label="Trading card game">
     <button class="tcg-tab is-active" data-tcg="all" role="tab" aria-selected="true" type="button">All</button>
     <button class="tcg-tab" data-tcg="pokemon" role="tab" aria-selected="false" type="button">Pokémon</button>
     <button class="tcg-tab" data-tcg="onepiece" role="tab" aria-selected="false" type="button">One Piece</button>
+    <button class="tcg-tab" data-tcg="dragonball" role="tab" aria-selected="false" type="button">Dragon Ball</button>
   </div>
   <div class="search-row">
     <label class="search-field">
@@ -1804,8 +1842,247 @@
   </div>
 </section>
 
+<section class="era-section" data-tcg="dragonball">
+  <div class="era-header era-db"><span class="dragonball" aria-hidden="true"></span>Dragon Ball · Fusion World · 2024 — 2026</div>
+  <div class="card-grid">
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img no-watermark" alt="Reach the God" src="boosters/FB12-reach-the-god.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Reach the God</div>
+        <div class="set-name-jp">リーチ・ザ・ゴッド</div>
+        <div class="set-meta"><span class="set-code">FB12</span><span>December 12, 2026</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB12-reach-the-god-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB12-reach-the-god-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img no-watermark" alt="Brightness of Hope" src="boosters/FB11-brightness-of-hope.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Brightness of Hope</div>
+        <div class="set-name-jp">ブライトネス・オブ・ホープ</div>
+        <div class="set-meta"><span class="set-code">FB11</span><span>September 12, 2026</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB11-brightness-of-hope-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB11-brightness-of-hope-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img no-watermark" alt="Cross Force" src="boosters/FB10-cross-force.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Cross Force</div>
+        <div class="set-name-jp">クロスフォース</div>
+        <div class="set-meta"><span class="set-code">FB10</span><span>June 13, 2026</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB10-cross-force-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB10-cross-force-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Dual Evolution" src="boosters/FB09-dual-evolution.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Dual Evolution</div>
+        <div class="set-name-jp">デュアルエボリューション</div>
+        <div class="set-meta"><span class="set-code">FB09</span><span>March 14, 2026</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB09-dual-evolution-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB09-dual-evolution-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Saiyan's Pride" src="boosters/FB08-saiyans-pride.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Saiyan's Pride</div>
+        <div class="set-name-jp">誇り高き戦闘民族</div>
+        <div class="set-meta"><span class="set-code">FB08</span><span>December 13, 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB08-saiyans-pride-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB08-saiyans-pride-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Wish for Shenron" src="boosters/FB07-wish-for-shenron.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Wish for Shenron</div>
+        <div class="set-name-jp">神龍への願い</div>
+        <div class="set-meta"><span class="set-code">FB07</span><span>September 13, 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB07-wish-for-shenron-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB07-wish-for-shenron-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Rivals Clash" src="boosters/FB06-rivals-clash.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Rivals Clash</div>
+        <div class="set-name-jp">迫り来る脅威</div>
+        <div class="set-meta"><span class="set-code">FB06</span><span>April 26, 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB06-rivals-clash-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB06-rivals-clash-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="New Adventure" src="boosters/FB05-new-adventure.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">New Adventure</div>
+        <div class="set-name-jp">未知なる冒険</div>
+        <div class="set-meta"><span class="set-code">FB05</span><span>February 8, 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB05-new-adventure-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB05-new-adventure-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Ultra Limit" src="boosters/FB04-ultra-limit.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Ultra Limit</div>
+        <div class="set-name-jp">限界を超えし者</div>
+        <div class="set-meta"><span class="set-code">FB04</span><span>November 8, 2024</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB04-ultra-limit-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB04-ultra-limit-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Raging Roar" src="boosters/FB03-raging-roar.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Raging Roar</div>
+        <div class="set-name-jp">怒りの咆哮</div>
+        <div class="set-meta"><span class="set-code">FB03</span><span>August 9, 2024</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB03-raging-roar-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB03-raging-roar-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Blazing Aura" src="boosters/FB02-blazing-aura.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Blazing Aura</div>
+        <div class="set-name-jp">烈火の闘気</div>
+        <div class="set-meta"><span class="set-code">FB02</span><span>May 10, 2024</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB02-blazing-aura-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB02-blazing-aura-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Awakened Pulse" src="boosters/FB01-awakened-pulse.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Awakened Pulse</div>
+        <div class="set-name-jp">覚醒の鼓動</div>
+        <div class="set-meta"><span class="set-code">FB01</span><span>February 16, 2024</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB01-awakened-pulse-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="FB01-awakened-pulse-stock">0</div></div></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="era-section" data-tcg="dragonball">
+  <div class="era-header era-db-sp"><span class="dragonball" aria-hidden="true"></span>Dragon Ball · Manga &amp; Story Boosters</div>
+  <div class="card-grid">
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Story Booster 01" src="boosters/ST01-story-booster-01.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Story Booster 01</div>
+        <div class="set-name-jp">ストーリーブースター 01</div>
+        <div class="set-meta"><span class="set-code">ST01</span><span>August 8, 2026</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="ST01-story-booster-01-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="ST01-story-booster-01-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Manga Booster 02" src="boosters/SB02-manga-booster-02.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Manga Booster 02</div>
+        <div class="set-name-jp">マンガブースター 02</div>
+        <div class="set-meta"><span class="set-code">SB02</span><span>November 8, 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="SB02-manga-booster-02-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="SB02-manga-booster-02-stock">0</div></div></div>
+      </div>
+    </article>
+
+    <article class="card db">
+      <div class="card-media">
+        <img class="booster-img" alt="Manga Booster 01" src="boosters/SB01-manga-booster-01.png">
+      </div>
+      <div class="card-info">
+        <div class="set-name">Manga Booster 01</div>
+        <div class="set-name-jp">マンガブースター 01</div>
+        <div class="set-meta"><span class="set-code">SB01</span><span>June 28, 2025</span></div>
+      </div>
+      <div class="card-inputs">
+        <div class="input-group"><span class="input-label">Price</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="SB01-manga-booster-01-sell">0.00</div><span class="sym" style="font-size:1.4rem; font-weight:700;">€</span></div></div>
+        <div class="input-group"><span class="input-label">Stock</span><div style="display:flex; align-items:baseline; gap:2px;"><div class="price-display" data-key="SB01-manga-booster-01-stock">0</div></div></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
 <p class="note">
-  Pokémon booster pack images from <a href="https://www.artofpkm.com">artofpkm.com</a> &nbsp;·&nbsp; One Piece images &amp; logos from <a href="https://tcgdex.net">tcgdex</a> &nbsp;·&nbsp; Set logos from <a href="https://www.serebii.net">Serebii</a> &nbsp;·&nbsp; Prices stored in <a href="https://supabase.com">Supabase</a><br>
+  Pokémon booster pack images from <a href="https://www.artofpkm.com">artofpkm.com</a> &nbsp;·&nbsp; One Piece images &amp; logos from <a href="https://tcgdex.net">tcgdex</a> &nbsp;·&nbsp; Dragon Ball pack art from <a href="https://www.japan2uk.com">Japan2UK</a> and <a href="https://japan-figure.com">Japan Figure</a> &nbsp;·&nbsp; Set logos from <a href="https://www.serebii.net">Serebii</a> &nbsp;·&nbsp; Prices stored in <a href="https://supabase.com">Supabase</a><br>
   <strong>Save as PDF:</strong> Chrome → File → Print → Save as PDF (enable "Background graphics")
 </p>
 </body>
