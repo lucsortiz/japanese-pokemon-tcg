@@ -118,16 +118,30 @@ Serve the directory with any static server (Vercel preview, `npx serve`, `python
 ```bash
 SUPABASE_URL='...' SUPABASE_ANON_KEY='...' SITE_URL='http://localhost:4444' node build.mjs
 # ...test...
-git checkout index.html   # restore placeholders before committing
+# restore __SUPABASE_URL__ / __SUPABASE_ANON_KEY__ / __SITE_URL__ in
+# index.html and admin.html before committing
 ```
+
+`SUPABASE_URL` and `SUPABASE_ANON_KEY` are the public project values (Vercel env, or the already deployed site). They are not in `.env`. Do not commit the substituted HTML. `git checkout` of those files also drops any uncommitted set edits, so put the three placeholders back in place when the files have other work.
 
 ## Admin page testing
 
 `admin.html` is gated by a Supabase Auth password login. A reusable test user is provisioned in the project's Supabase Auth so agents can exercise the edit flow end-to-end (load prices, edit an input, watch the debounced upsert, verify on reload).
 
-Credentials live in the gitignored `.env` at the repo root (`ADMIN_TEST_EMAIL` / `ADMIN_TEST_PASSWORD`). The static site does **not** read `.env` itself — copy the values into the login form by hand (or via a browser automation tool) after running `build.mjs` with the Supabase env vars set.
+The static site does not read `.env`. Login values live only in the gitignored `.env` at the repo root:
 
-Use this account only for local/preview verification, never for production data. Don't paste the credentials into committed files, logs, or chat transcripts that will be persisted.
+| Variable | Form field |
+|---|---|
+| `ADMIN_TEST_EMAIL` | `#admin-email` |
+| `ADMIN_TEST_PASSWORD` | `#admin-pass` |
+
+Read those two names from `.env` at login time. Never copy the values into committed files, docs, logs, or chat.
+
+1. Run `build.mjs` as in "Local dev" so `__SUPABASE_URL__` and `__SUPABASE_ANON_KEY__` are real. Login returns "Supabase URL not configured" while the placeholders are still in the file.
+2. Serve the repo and open `admin.html` (for example `python3 -m http.server 4444`, then `http://localhost:4444/admin.html`).
+3. Fill `#admin-email` and `#admin-pass` from `.env` and submit **Login via Supabase** (the button calls `login()`, and Enter in the password field does the same).
+4. Success is the `#login-overlay` hidden and `#app-content` shown, with the status line reaching "Prices synced".
+5. Use this account only for local or preview checks. If you write a price or stock value, set it back before finishing. Restore the three placeholders in both HTML files before committing.
 
 ## Deploy
 

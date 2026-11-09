@@ -25,6 +25,12 @@ open http://localhost:4444
 
 The page renders immediately. Supabase sync needs the placeholders substituted — see [AGENTS.md](AGENTS.md#local-dev) for the one-liner.
 
+## Admin login
+
+`admin.html` asks for an email and password before the editor is shown. The test account is the pair `ADMIN_TEST_EMAIL` and `ADMIN_TEST_PASSWORD` in the gitignored `.env` at the repo root. Read them from that file when you log in. Do not paste the values into the repo or into docs.
+
+The page does not load `.env` on its own. Substitute the Supabase placeholders with `build.mjs` first, or the form reports that the Supabase URL is not configured. Step-by-step is in [AGENTS.md](AGENTS.md#admin-page-testing).
+
 ## Project layout
 
 ```
